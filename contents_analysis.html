@@ -1,0 +1,5688 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MEDIA LOCKDOWN</title>
+  <style>
+
+    /* =========================
+       기본 설정
+    ========================= */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.96)),
+        radial-gradient(circle at top, #1e3a8a, #020617 65%);
+      color: #f8fafc;
+      font-family: "Noto Sans KR", "Pretendard", "Malgun Gothic", sans-serif;
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 18px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    /* =========================
+       공통 버튼 / 패널
+    ========================= */
+    .main-btn,
+    .submit-btn {
+      display: inline-block;
+      width: min(90%, 420px);
+      padding: 20px 24px;
+      margin: 20px auto 40px;
+      font-size: 24px;
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(135deg, #dc2626, #2563eb);
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(220, 38, 38, 0.45);
+      transition: 0.2s;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 12px;
+      margin-bottom: 0;
+      padding: 13px;
+      font-size: 17px;
+    }
+
+    .main-btn:hover,
+    .submit-btn:hover {
+      transform: scale(1.03);
+    }
+
+    .back-btn {
+      padding: 10px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      border-radius: 12px;
+      background: rgba(30, 41, 59, 0.9);
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .panel {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 28px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 22px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+    }
+
+    /* =========================
+       INTRO
+    ========================= */
+    .intro-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .intro-title {
+      margin: 20px 0 10px;
+      font-size: 36px;
+      font-weight: 900;
+      color: #facc15;
+      text-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+    }
+
+    .intro-subtitle {
+      margin-bottom: 18px;
+      font-size: 18px;
+      color: #cbd5e1;
+    }
+
+    .intro-img {
+      width: 100%;
+      max-width: 780px;
+      display: block;
+      margin: 20px auto 24px;
+      border-radius: 16px;
+      border: 2px solid rgba(96, 165, 250, 0.45);
+      box-shadow: 0 0 40px rgba(37, 99, 235, 0.35);
+    }
+
+    /* =========================
+       선택 화면
+    ========================= */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .room-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .choice-btn,
+    .room-btn {
+      padding: 22px 16px;
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.95);
+      color: #f8fafc;
+      font-size: 21px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .choice-btn:hover,
+    .room-btn:hover {
+      background: rgba(37, 99, 235, 0.95);
+      transform: translateY(-3px);
+    }
+
+    .room-btn span {
+      display: block;
+      margin-top: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* =========================
+       ROOM 공통 화면
+    ========================= */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1500px;
+      margin: 0 auto 10px;
+      padding: 10px 16px;
+      background: rgba(15, 23, 42, 0.92);
+      border-bottom: 2px solid #ef4444;
+      border-radius: 0 0 18px 18px;
+    }
+
+    .timer {
+      font-size: 28px;
+      font-weight: 900;
+      color: #ef4444;
+      text-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+    }
+
+    .room-layout {
+      display: grid;
+      grid-template-columns: 2.3fr 0.9fr;
+      gap: 16px;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 10px;
+      align-items: start;
+    }
+
+    .sns-panel,
+    .question-panel {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .sns-panel {
+      min-height: calc(100vh - 120px);
+    }
+
+    .question-panel {
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+
+    .mission-label {
+      margin: 0 0 6px;
+      color: #60a5fa;
+      font-size: 15px;
+      letter-spacing: 1px;
+    }
+
+    .sns-panel h1 {
+      text-align: left;
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: #facc15;
+    }
+
+    .mission-desc {
+      font-size: 16px;
+      line-height: 1.45;
+      color: #cbd5e1;
+      margin: 0 0 10px;
+    }
+
+    .sns-image {
+      width: 100%;
+      max-height: calc(100vh - 210px);
+      object-fit: contain;
+      display: block;
+      border-radius: 18px;
+      border: 2px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 0 25px rgba(37, 99, 235, 0.25);
+      background: rgba(2, 6, 23, 0.75);
+    }
+
+    .question-panel h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      color: #f8fafc;
+    }
+
+    .question-text {
+      padding: 12px;
+      margin: 0 0 12px;
+      background: rgba(30, 41, 59, 0.9);
+      border-left: 5px solid #ef4444;
+      border-radius: 12px;
+      font-size: 15px;
+      line-height: 1.45;
+      color: #e2e8f0;
+    }
+
+    .choice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .check-choice {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      background: rgba(2, 6, 23, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 14px;
+      font-size: 15.5px;
+      line-height: 1.3;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .check-choice:hover {
+      background: rgba(37, 99, 235, 0.28);
+      border-color: rgba(96, 165, 250, 0.7);
+    }
+
+    .check-choice input {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .feedback-box {
+      display: none;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 14.5px;
+      line-height: 1.45;
+    }
+
+    .feedback-box.success {
+      display: block;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      color: #dcfce7;
+    }
+
+    .feedback-box.fail {
+      display: block;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #fee2e2;
+    }
+
+    /* =========================
+       임무 1 MISSION 2 STEP 1
+       사진 속 단서 터치 영역
+    ========================= */
+    .hotspot-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .hotspot {
+      position: absolute;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .hotspot.found {
+      background: rgba(250, 204, 21, 0.16);
+      border: 8px solid rgba(250, 204, 21, 0.9);
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.55);
+    }
+
+    /* ===== hotspot 위치 고정용 수정 ===== */
+
+    /* STEP1 이미지 박스 자체를 고정 비율로 만들기 */
+    #room1Mission2Step1 .hotspot-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1536 / 1152;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #020617;
+    }
+
+    /* 이미지가 박스에 딱 맞게 고정 */
+    #room1Mission2Step1 .hotspot-wrap .sns-image {
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      object-fit: fill;
+      display: block;
+    }
+
+    /* hotspot도 같은 박스 기준으로 고정 */
+    #room1Mission2Step1 .hotspot {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    #room1Mission2Step1 .hotspot.found {
+      background: rgba(250, 204, 21, 0.22);
+      border: 2px solid rgba(250, 204, 21, 0.95);
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.65);
+    }
+
+    /* ===== 임무 1 MISSION 2 STEP 2 ===== */
+
+    .step2-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 10px;
+      align-items: start;
+    }
+
+    .step2-question {
+      min-height: calc(100vh - 130px);
+    }
+
+    .step2-question .check-choice {
+      font-size: 18px;
+      padding: 14px 16px;
+    }
+
+    .review-panel {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(96, 165, 250, 0.35);
+      border-radius: 18px;
+      padding: 14px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+
+    .review-panel h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      color: #facc15;
+    }
+
+    .review-desc {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .review-image {
+      width: 100%;
+      display: block;
+      border-radius: 14px;
+      border: 2px solid rgba(148, 163, 184, 0.35);
+      margin-bottom: 12px;
+    }
+
+    .review-clue-box {
+      background: rgba(2, 6, 23, 0.5);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .review-clue-box h3 {
+      margin: 0 0 10px;
+      color: #93c5fd;
+    }
+
+    .clue-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .clue-list li {
+      margin-bottom: 7px;
+      padding: 9px 10px;
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(96, 165, 250, 0.5);
+      border-radius: 10px;
+      font-size: 14.5px;
+      line-height: 1.3;
+    }
+
+    .small-clue-list li {
+      font-size: 13.5px;
+      padding: 7px 9px;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .step2-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .step2-question {
+        min-height: auto;
+      }
+
+      .review-panel {
+        max-height: none;
+        overflow-y: visible;
+      }
+    }
+
+    /* ===== STEP3 / 힌트 페이지 ===== */
+
+    .single-choice-list {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .single-choice-list .check-choice {
+      font-size: 18px;
+      padding: 15px 16px;
+    }
+
+    .single-choice-list input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .hint-photo {
+      width: 100%;
+      max-width: 760px;
+      display: block;
+      margin: 0 auto;
+      border-radius: 18px;
+      border: 2px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 0 28px rgba(37, 99, 235, 0.35);
+    }
+
+    .briefing-video {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 480px;
+      margin: 20px auto 24px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid rgba(96, 165, 250, 0.55);
+      box-shadow: 0 0 45px rgba(37, 99, 235, 0.45);
+      background:
+        linear-gradient(rgba(2, 6, 23, 0.75), rgba(2, 6, 23, 0.95)),
+        radial-gradient(circle at center, #1e40af, #020617 70%);
+    }
+
+    .briefing-video::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.03) 0px,
+          rgba(255,255,255,0.03) 1px,
+          transparent 2px,
+          transparent 5px
+        );
+      animation: glitch 0.18s infinite;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      top: -20%;
+      width: 100%;
+      height: 18%;
+      background: rgba(96, 165, 250, 0.12);
+      animation: scanMove 3s linear infinite;
+    }
+
+    .briefing-label {
+      position: absolute;
+      top: 22px;
+      left: 24px;
+      padding: 8px 14px;
+      border: 1px solid #ef4444;
+      color: #fecaca;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: rgba(127, 29, 29, 0.4);
+    }
+
+    .briefing-status {
+      position: absolute;
+      bottom: 22px;
+      right: 24px;
+      color: #93c5fd;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .briefing-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      text-align: center;
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.5;
+      color: #f8fafc;
+      text-shadow: 0 0 18px rgba(96, 165, 250, 0.9);
+      z-index: 2;
+    }
+
+    .hidden-btn {
+      display: none;
+    }
+
+    @keyframes scanMove {
+      from { top: -20%; }
+      to { top: 110%; }
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(1px, -1px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .commander-briefing {
+      max-width: 1100px;
+      margin: 24px auto 28px;
+      display: grid;
+      grid-template-columns: 0.8fr 1.4fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .commander-box {
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 2px solid rgba(96, 165, 250, 0.45);
+      box-shadow: 0 0 35px rgba(37, 99, 235, 0.35);
+    }
+
+    .commander-img {
+      width: 100%;
+      max-height: 430px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .commander-name {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(239, 68, 68, 0.2);
+      color: #fecaca;
+      font-size: 20px;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .speech-box {
+      position: relative;
+      padding: 26px 30px;
+      border-radius: 24px;
+      background: rgba(248, 250, 252, 0.95);
+      color: #0f172a;
+      text-align: left;
+      font-size: 19px;
+      line-height: 1.75;
+      font-weight: 700;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .speech-box::before {
+      content: "";
+      position: absolute;
+      left: -24px;
+      top: 120px;
+      border-width: 16px 24px 16px 0;
+      border-style: solid;
+      border-color: transparent rgba(248, 250, 252, 0.95) transparent transparent;
+    }
+
+    .speech-box p {
+      margin: 0 0 14px;
+    }
+
+    .speech-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .mission-start {
+      margin-top: 18px !important;
+      padding: 14px;
+      border-radius: 14px;
+      background: #0f172a;
+      color: #facc15;
+      text-align: center;
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 900px) {
+      .commander-briefing {
+        grid-template-columns: 1fr;
+      }
+
+      .speech-box::before {
+        display: none;
+      }
+
+      .speech-box {
+        font-size: 17px;
+      }
+
+      .room-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sns-panel {
+        min-height: auto;
+      }
+
+      .question-panel {
+        max-height: none;
+        overflow-y: visible;
+      }
+
+      .sns-image {
+        max-height: none;
+      }
+
+      .room-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .check-choice {
+        font-size: 17px;
+      }
+    }
+
+    /* ===== 긴급 지령 타자기 인트로 ===== */
+    .intro-terminal {
+      max-width: 1120px;
+      margin: 28px auto;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      background:
+        linear-gradient(rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 0.98)),
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.28), transparent 45%);
+      box-shadow: 0 0 45px rgba(37, 99, 235, 0.35);
+    }
+
+    .terminal-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: rgba(15, 23, 42, 0.96);
+      border-bottom: 1px solid rgba(96, 165, 250, 0.35);
+    }
+
+    .red-dot,
+    .yellow-dot,
+    .green-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .red-dot { background: #ef4444; }
+    .yellow-dot { background: #facc15; }
+    .green-dot { background: #22c55e; }
+
+    .terminal-title {
+      margin-left: 10px;
+      font-size: 15px;
+      font-weight: 900;
+      color: #93c5fd;
+      letter-spacing: 1px;
+    }
+
+    .terminal-body {
+      padding: 30px 34px 34px;
+      min-height: 650px;
+    }
+
+    .typing-text {
+      white-space: pre-line;
+      min-height: 390px;
+      padding: 24px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      font-size: 23px;
+      line-height: 1.78;
+      font-weight: 800;
+      color: #e0f2fe;
+      text-align: left;
+      text-shadow: 0 0 12px rgba(96, 165, 250, 0.45);
+    }
+
+    .typing-text::after {
+      content: "▋";
+      color: #facc15;
+      animation: cursorBlink 0.8s infinite;
+    }
+
+    @keyframes cursorBlink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .mission-guide {
+      margin-top: 26px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .mission-guide h2 {
+      text-align: center;
+      font-size: 32px;
+      margin: 0 0 24px;
+      color: #facc15;
+    }
+
+    .flow-box {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 26px;
+    }
+
+    .flow-card {
+      padding: 18px 12px;
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      text-align: center;
+      font-size: 17px;
+      font-weight: 900;
+      color: #f8fafc;
+    }
+
+    .final-card {
+      background: linear-gradient(135deg, #dc2626, #2563eb);
+    }
+
+    .arrow {
+      color: #facc15;
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .mission-rules {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin: 24px 0;
+    }
+
+    .mission-rules div {
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .mission-rules strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 20px;
+      color: #93c5fd;
+    }
+
+    .mission-rules p {
+      margin: 0;
+      color: #e2e8f0;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .terminal-body {
+        padding: 20px;
+      }
+
+      .typing-text {
+        font-size: 18px;
+        min-height: 420px;
+        padding: 18px;
+      }
+
+      .flow-box {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+        text-align: center;
+      }
+
+      .mission-rules {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .highlight-yellow {
+      color: #facc15;
+      font-weight: 900;
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.45);
+    }
+
+    .highlight-red {
+      color: #ef4444;
+      font-weight: 900;
+      text-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
+    }
+    /* ========================= */
+/* 책장 */
+/* ========================= */
+
+.bookshelf{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-top:30px;
+}
+
+.book{
+  height:190px;
+
+  border:none;
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #7c2d12,
+      #431407
+    );
+
+  color:white;
+
+  font-size:20px;
+  font-weight:800;
+
+  padding:14px;
+
+  cursor:pointer;
+
+  transition:.2s;
+
+  line-height:1.5;
+
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.08),
+    0 8px 20px rgba(0,0,0,.35);
+}
+
+.book:hover{
+  transform:translateY(-6px);
+}
+
+.book.selected{
+  outline:5px solid #facc15;
+  transform:translateY(-10px);
+}
+
+
+/* ========================= */
+/* 실패 장면 */
+/* ========================= */
+
+.failure-scene{
+  width:100%;
+  height:100vh;
+
+  background:
+    linear-gradient(
+      rgba(0,0,0,.7),
+      rgba(0,0,0,.85)
+    ),
+    url('./image/city_fail.png');
+
+  background-size:cover;
+  background-position:center;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.failure-overlay{
+  width:min(900px,90%);
+  padding:50px;
+
+  border-radius:24px;
+
+  background:
+    rgba(15,23,42,.92);
+
+  text-align:center;
+}
+
+.failure-overlay h1{
+  font-size:52px;
+  color:#ef4444;
+}
+
+.failure-overlay p{
+  font-size:24px;
+  line-height:1.8;
+}
+
+.danger-text{
+  color:#ef4444;
+  font-weight:900;
+  margin-top:30px;
+}
+
+
+/* ========================= */
+/* 힌트 */
+/* ========================= */
+
+.hint-box{
+  margin-top:30px;
+
+  padding:28px;
+
+  border-radius:20px;
+
+  background:
+    rgba(30,41,59,.9);
+
+  border:
+    2px solid rgba(250,204,21,.5);
+}
+
+.hint-box h2{
+  color:#facc15;
+  margin-bottom:16px;
+}
+
+.article-word-hotspot {
+  position: absolute;
+  border: 3px solid rgba(250, 204, 21, 0);
+  background: rgba(250, 204, 21, 0);
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.article-word-hotspot.found {
+  border-color: rgba(250, 204, 21, 0.95);
+  background: rgba(250, 204, 21, 0.22);
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.65);
+}
+
+.flower-field {
+  margin: 34px auto;
+  padding: 34px 20px 18px;
+  max-width: 1100px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(to top, rgba(67, 40, 24, 0.95) 0%, rgba(67, 40, 24, 0.95) 38%, rgba(15, 23, 42, 0.8) 38%);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.flower {
+  position: relative;
+  min-width: 130px;
+  padding: 16px 14px;
+  border: none;
+  border-radius: 50px 50px 18px 18px;
+  background: linear-gradient(180deg, #facc15, #f97316);
+  color: #111827;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  transform: translateY(22px);
+  transition: 0.25s;
+  box-shadow: 0 8px 0 #166534;
+}
+
+.flower.selected {
+  transform: translateY(-24px);
+  background: linear-gradient(180deg, #fef08a, #22c55e);
+  box-shadow: 0 14px 22px rgba(34, 197, 94, 0.35);
+}
+/* ========================= */
+/* 기사 STEP1 고정 비율 */
+/* ========================= */
+
+.article-fixed-wrap{
+  position:relative;
+
+  width:100%;
+  max-width:1100px;
+
+  margin:0 auto;
+
+  aspect-ratio: 1536 / 1024;
+}
+
+.article-fixed-image{
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  display:block;
+
+  border-radius:18px;
+}
+
+/* ========================= */
+/* 실행력 */
+/* ========================= */
+
+.word-action{
+  position:absolute;
+
+  left:52%;
+  top:9.5%;
+
+  width:11.3%;
+  height:5.2%;
+
+  border-radius:18px;
+
+  border:3px solid transparent;
+
+  background:rgba(250,204,21,0);
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+/* ========================= */
+/* 신뢰 */
+/* ========================= */
+
+.word-trust{
+  position:absolute;
+
+  left:68%;
+  top:9.5%;
+
+  width:8.4%;
+  height:5.2%;
+
+  border-radius:18px;
+
+  border:3px solid transparent;
+
+  background:rgba(250,204,21,0);
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+/* ========================= */
+/* 찾았을 때 */
+/* ========================= */
+
+.article-word-hotspot.found{
+  border-color:#facc15;
+
+  background:
+    rgba(250,204,21,.25);
+
+  box-shadow:
+    0 0 20px rgba(250,204,21,.6);
+}
+/* STEP2 단어 선택 카드형 UI */
+.flower-field {
+  margin: 30px auto;
+  padding: 24px;
+  max-width: 1050px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+}
+
+.flower {
+  padding: 18px 14px;
+  min-height: 64px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(30, 41, 59, 0.95);
+  color: #e2e8f0;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.flower:hover {
+  transform: translateY(-3px);
+  border-color: rgba(96, 165, 250, 0.8);
+  background: rgba(37, 99, 235, 0.35);
+}
+
+.flower.selected {
+  transform: translateY(-5px);
+  background: linear-gradient(135deg, #facc15, #22c55e);
+  color: #0f172a;
+  border-color: #fef08a;
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.45);
+}
+
+@media (max-width: 900px) {
+  .flower-field {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* =========================
+   배경 이미지 클릭 방지
+========================= */
+
+.background-image,
+.background-image img,
+.bg,
+.bg img,
+.article-image,
+.article-image img,
+.browser-frame,
+.browser-frame img,
+.news-window img{
+  pointer-events:none;
+}
+
+/* =========================
+   기사창 기본 설정
+========================= */
+
+.news-window{
+  position:relative;
+  z-index:1;
+}
+
+/* =========================
+   클릭 영역 활성화
+========================= */
+
+.keyword-layer{
+  position:relative;
+  z-index:10;
+  pointer-events:auto;
+}
+
+/* 핵심 단어 버튼 */
+
+.keyword{
+  position:relative;
+  z-index:20;
+  pointer-events:auto;
+  cursor:pointer;
+}
+
+/* 버튼 전체 클릭 가능 */
+
+button,
+input,
+textarea,
+select{
+  position:relative;
+  z-index:30;
+  pointer-events:auto;
+}
+
+/* =========================
+   혹시 전체 화면 덮는 레이어 있을 경우
+========================= */
+
+.overlay,
+.effect-layer,
+.frame-overlay{
+  pointer-events:none;
+}
+
+/* =========================
+   이미지가 화면 덮지 않게
+========================= */
+
+img{
+  max-width:100%;
+}
+
+/* =========================
+   브라우저 프레임 유지
+========================= */
+
+.browser-frame{
+  position:relative;
+  z-index:1;
+}
+/* SNS2 STEP2 단서 찾기 화면 고정 비율 */
+#room1Mission2Step2 .hotspot-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1536 / 1152;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #020617;
+}
+
+#room1Mission2Step2 .hotspot-wrap .sns-image {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: fill;
+  display: block;
+}
+
+#room1Mission2Step2 .hotspot {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+}
+
+#room1Mission2Step2 .hotspot.found {
+  background: rgba(250, 204, 21, 0.22);
+  border: 2px solid rgba(250, 204, 21, 0.95);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.65);
+}
+.image-choice-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin:16px 0 20px;
+}
+
+.image-choice-grid button{
+  padding:14px 10px;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.35);
+  background:rgba(30,41,59,.95);
+  color:#f8fafc;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.image-choice-grid button.selected{
+  background:linear-gradient(135deg,#facc15,#22c55e);
+  color:#0f172a;
+  border-color:#fef08a;
+}
+  
+
+/* ===== 추가 정리 CSS ===== */
+.calc-row {
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  gap:18px;
+  flex-wrap:wrap;
+  margin:30px 0;
+}
+.calc-card {
+  text-align:center;
+  min-width:160px;
+}
+.calc-card strong {
+  display:block;
+  margin-bottom:8px;
+  font-size:20px;
+  color:#facc15;
+}
+.calc-card select {
+  font-size:32px;
+  padding:10px 18px;
+  border-radius:12px;
+  border:1px solid rgba(148,163,184,.5);
+  background:#f8fafc;
+  color:#0f172a;
+  font-weight:900;
+}
+.calc-symbol {
+  font-size:44px;
+  font-weight:900;
+  color:#facc15;
+  padding-bottom:60px;
+}
+.text-input {
+  width:100%;
+  padding:12px;
+  font-size:18px;
+  border-radius:12px;
+  border:1px solid rgba(148,163,184,.4);
+}
+.answer-input{
+  width:100%;
+  padding:18px 20px;
+
+  border-radius:16px;
+  border:2px solid rgba(96,165,250,.35);
+
+  background:rgba(2,6,23,.9);
+
+  color:#f8fafc;
+
+  font-size:20px;
+  font-weight:700;
+
+  outline:none;
+
+  margin-bottom:12px;
+}
+
+.answer-input:focus{
+  border-color:#60a5fa;
+  box-shadow:0 0 18px rgba(96,165,250,.35);
+}
+
+.answer-input::placeholder{
+  color:#94a3b8;
+}
+.ad-hotspot-wrap{
+  position:relative;
+  width:100%;
+  max-width:900px;
+  margin:20px auto;
+  border-radius:18px;
+  overflow:hidden;
+  background:white;
+}
+
+.ad-hotspot-image{
+  width:100%;
+  display:block;
+  border-radius:18px;
+}
+
+.ad-hotspot{
+  position:absolute;
+  width:90px;
+  height:90px;
+  transform:translate(-50%, -50%);
+  border:3px solid transparent;
+  border-radius:18px;
+  background:rgba(250,204,21,0);
+  cursor:pointer;
+}
+
+.ad-hotspot.selected{
+  border-color:#facc15;
+  background:rgba(250,204,21,.25);
+  box-shadow:0 0 18px rgba(250,204,21,.75);
+}
+
+.ad-hotspot::after{
+  content:attr(data-word);
+  display:none;
+  position:absolute;
+  left:50%;
+  top:-34px;
+  transform:translateX(-50%);
+  min-width:80px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#0f172a;
+  color:#facc15;
+  font-size:15px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.ad-hotspot.selected::after{
+  display:block;
+}
+/* SNS2 hotspot: 클릭 영역은 크게, 표시 영역은 작게 */
+#room1Mission2Step2 .hotspot {
+  width: 90px;
+  height: 90px;
+}
+
+#room1Mission2Step2 .hotspot.found {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+#room1Mission2Step2 .hotspot.found::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 46px;
+  height: 46px;
+
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+
+  background: rgba(250, 204, 21, 0.22);
+  border: 2px solid rgba(250, 204, 21, 0.95);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.65);
+}
+.room2-ad-image {
+  width: 100%;
+  max-width: 680px;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+  margin: 16px auto 22px;
+  border-radius: 18px;
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  background: white;
+}
+#room2AdStep1 .panel,
+#room2AdStep2 .panel,
+#room2AdStep3 .panel {
+  max-width: 1100px;
+  margin: 16px auto;
+  padding: 22px;
+}
+
+#room2AdStep1 h1,
+#room2AdStep2 h1,
+#room2AdStep3 h1 {
+  font-size: 30px;
+  margin: 8px 0;
+}
+
+#room2AdStep1 .sub,
+#room2AdStep2 .sub,
+#room2AdStep3 .sub {
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+#room2AdStep1 .choice-list,
+#room2AdStep2 .choice-list,
+#room2AdStep3 .choice-list {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+#room2AdStep1 .check-choice,
+#room2AdStep2 .check-choice,
+#room2AdStep3 .check-choice {
+  padding: 11px 14px;
+  font-size: 16px;
+}
+.room2-reveal-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  margin: 16px auto 22px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: white;
+}
+
+.room2-reveal-wrap .room2-ad-image {
+  width: 100%;
+  max-height: none;
+  object-fit: contain;
+  display: block;
+  border-radius: 18px;
+}
+.room2-reveal-wrap{
+  position:relative;
+  width:100%;
+  max-width:680px;
+  margin:20px auto;
+}
+
+.room2-ad-image{
+  width:100%;
+  display:block;
+  border-radius:18px;
+}
+
+/* 흐림 영역 */
+
+.room2-reveal-wrap{
+  position:relative;
+  width:100%;
+  max-width:680px;
+  margin:20px auto;
+  overflow:hidden;
+  border-radius:24px;
+}
+
+.room2-ad-image{
+  width:100%;
+  display:block;
+  border-radius:24px;
+}
+
+/* 흐림 영역 */
+
+.blur-spot{
+  position:absolute;
+  overflow:hidden;
+  border-radius:36px;
+  cursor:pointer;
+  background:rgba(255,255,255,.25);
+  backdrop-filter:blur(55px);
+  -webkit-backdrop-filter:blur(55px);
+}
+.reveal-hole{
+  position:absolute;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+  background-repeat:no-repeat;
+  z-index:5;
+}
+
+/* 클릭 후 선명 */
+
+.blur-spot.revealed{
+
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
+
+  background:transparent;
+
+  pointer-events:none;
+}
+
+/* 위쪽 폐지 수레 */
+
+#upperBlur{
+
+  left:18%;
+  top:0%;
+
+  width:64%;
+  height:43%;
+
+  border-radius:40px;
+}
+
+/* 아래 캐리어 */
+
+#lowerBlur{
+
+  left:24%;
+  top:53%;
+
+  width:52%;
+  height:37%;
+
+  border-radius:40px;
+}
+.reveal-hole{
+  position:absolute;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+
+  background-image:url("./image/old.jpg");
+  background-repeat:no-repeat;
+  background-size:680px auto;
+}.hidden{
+  display:none;
+}
+#room2AdMeaningBox.hidden {
+  display: none !important;
+}
+
+#room2AdMeaningBox:not(.hidden) {
+  display: block !important;
+}
+.memory-grid{
+  display:grid;
+
+  grid-template-columns:
+  repeat(4, 1fr);
+
+  gap:14px;
+
+  max-width:900px;
+
+  margin:20px auto;
+}
+
+.memory-card{
+  aspect-ratio:1/1;
+
+  perspective:1000px;
+
+  cursor:pointer;
+}
+
+.memory-inner{
+  position:relative;
+
+  width:100%;
+  height:100%;
+
+  transition:.5s;
+
+  transform-style:preserve-3d;
+}
+
+.memory-card.flipped .memory-inner{
+  transform:rotateY(180deg);
+}
+
+.memory-front,
+.memory-back{
+
+  position:absolute;
+
+  width:100%;
+  height:100%;
+
+  border-radius:18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:10px;
+
+  text-align:center;
+
+  font-weight:700;
+
+  backface-visibility:hidden;
+}
+
+.memory-front{
+  background:#172554;
+  color:white;
+  font-size:32px;
+}
+
+.memory-back{
+  background:#eff6ff;
+  color:#111827;
+
+  transform:rotateY(180deg);
+
+  font-size:18px;
+}
+.memory-card.matched .memory-back {
+  border: 5px solid #39ff14;
+  box-shadow: 0 0 22px rgba(57,255,20,.8);
+}
+  
+
+/* ===== ROOM2 STEP2 카드 뒤집기 최종 정리 ===== */
+#room2AdStep2 .memory-grid{
+  display:grid !important;
+  grid-template-columns:repeat(4, 1fr) !important;
+  gap:14px !important;
+  max-width:900px !important;
+  margin:20px auto !important;
+}
+
+#room2AdStep2 .memory-card{
+  min-height:120px !important;
+  aspect-ratio:auto !important;
+  border:none !important;
+  border-radius:18px !important;
+  background:#172554 !important;
+  color:#f8fafc !important;
+  font-size:22px !important;
+  font-weight:900 !important;
+  cursor:pointer !important;
+  padding:12px !important;
+  perspective:none !important;
+  transition:.2s !important;
+}
+
+#room2AdStep2 .memory-card .back{
+  display:none !important;
+}
+
+#room2AdStep2 .memory-card.flipped .front,
+#room2AdStep2 .memory-card.matched .front{
+  display:none !important;
+}
+
+#room2AdStep2 .memory-card.flipped .back,
+#room2AdStep2 .memory-card.matched .back{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  height:100% !important;
+}
+
+#room2AdStep2 .memory-card.flipped{
+  background:#eff6ff !important;
+  color:#111827 !important;
+}
+
+#room2AdStep2 .memory-card.matched{
+  background:#eff6ff !important;
+  color:#111827 !important;
+  border:5px solid #39ff14 !important;
+  box-shadow:0 0 22px rgba(57,255,20,.85) !important;
+}
+
+@media (max-width: 900px){
+  #room2AdStep2 .memory-grid{
+    grid-template-columns:repeat(3, 1fr) !important;
+  }
+}
+.room2-step3-layout{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:18px;
+  max-width:1400px;
+  margin:10px auto;
+  align-items:start;
+}
+
+.room2-step3-question{
+  margin:0;
+  max-width:none;
+}
+
+.room2-step3-image-panel{
+  margin:0;
+  max-width:none;
+}
+
+.room2-step3-image-panel h2{
+  text-align:center;
+  color:#facc15;
+  margin-top:0;
+}
+
+.room2-step3-image{
+  width:100%;
+  max-height:calc(100vh - 180px);
+  object-fit:contain;
+  display:block;
+  margin:0 auto;
+  border-radius:18px;
+  background:white;
+}
+
+@media (max-width:900px){
+  .room2-step3-layout{
+    grid-template-columns:1fr;
+  }
+}
+.short-answer-box{
+  background:rgba(15,23,42,.65);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  padding:22px;
+  margin:18px 0;
+}
+
+.answer-guide{
+  font-size:20px;
+  line-height:1.8;
+  color:#f8fafc;
+  margin-bottom:18px;
+}
+
+.answer-input{
+  width:100%;
+  padding:16px 18px;
+  border-radius:14px;
+  border:none;
+  background:#eff6ff;
+  font-size:20px;
+  font-weight:700;
+  outline:none;
+  color:#111827;
+}
+.promo-hotspot-wrap{
+  position:relative;
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+}
+
+.promo-hotspot-image{
+  width:100%;
+  display:block;
+  border-radius:18px;
+}
+
+.promo-hotspot{
+  position:absolute;
+  border:3px solid transparent;
+  background:rgba(250,204,21,0);
+  cursor:pointer;
+  z-index:20;
+}
+
+.promo-hotspot.found{
+  border-color:#facc15;
+  background:rgba(250,204,21,.22);
+  box-shadow:0 0 18px rgba(250,204,21,.75);
+}
+
+.star-spot{
+  left:43%;
+  top:54%;
+  width:11%;
+  height:8%;
+  border-radius:50%;
+}
+
+.child-spot{
+  left:38%;
+  top:57%;
+  width:20%;
+  height:25%;
+  border-radius:40%;
+}
+
+.earth-spot{
+  left:0%;
+  top:79%;
+  width:100%;
+  height:18%;
+  border-radius:50%;
+}
+.promo-analysis-card{
+  width:100%;
+  margin:12px 0;
+  padding:18px;
+  border-radius:16px;
+  background:rgba(30,41,59,.95);
+  color:#f8fafc;
+  border:3px solid transparent;
+  font-size:18px;
+  font-weight:900;
+  text-align:left;
+  cursor:pointer;
+}
+
+.promo-analysis-card .answer-label{
+  display:block;
+  margin-top:12px;
+  padding:10px 14px;
+  border-radius:12px;
+  background:rgba(15,23,42,.9);
+  color:#cbd5e1;
+}
+
+.promo-analysis-card.selected.yellow{
+  border-color:#facc15;
+  box-shadow:0 0 18px rgba(250,204,21,.65);
+}
+
+.promo-analysis-card.selected.green{
+  border-color:#39ff14;
+  box-shadow:0 0 18px rgba(57,255,20,.65);
+}
+
+.promo-analysis-card.selected.blue{
+  border-color:#38bdf8;
+  box-shadow:0 0 18px rgba(56,189,248,.65);
+}
+
+.promo-analysis-card.done{
+  opacity:.9;
+}
+
+.promo-hotspot-wrap{
+  position:relative;
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+}
+
+.promo-hotspot-image{
+  width:100%;
+  display:block;
+  border-radius:18px;
+}
+
+.promo-hotspot{
+  position:absolute;
+  background:rgba(255,255,255,0);
+  border:4px solid transparent;
+  cursor:pointer;
+  z-index:20;
+}
+
+.promo-hotspot.found-yellow{
+  border-color:#facc15;
+  background:rgba(250,204,21,.16);
+  box-shadow:0 0 18px rgba(250,204,21,.75);
+}
+
+.promo-hotspot.found-green{
+  border-color:#39ff14;
+  background:rgba(57,255,20,.12);
+  box-shadow:0 0 18px rgba(57,255,20,.75);
+}
+
+.promo-hotspot.found-blue{
+  border-color:#38bdf8;
+  background:rgba(56,189,248,.12);
+  box-shadow:0 0 18px rgba(56,189,248,.75);
+}
+
+/* 별 위치 수정 */
+.star-spot{
+  left:37.5%;
+  top:51.5%;
+  width:10%;
+  height:7%;
+  border-radius:50%;
+}
+
+/* 아이 위치 유지 */
+.child-spot{
+  left:38%;
+  top:56%;
+  width:22%;
+  height:25%;
+  border-radius:45%;
+}
+
+/* 지구 위치 유지 */
+.earth-spot{
+  left:0%;
+  top:80%;
+  width:100%;
+  height:18%;
+  border-radius:50%;
+}
+.promo-word-bank{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  margin:18px 0;
+  padding:18px;
+  border-radius:18px;
+  background:rgba(15,23,42,.65);
+  border:1px solid rgba(148,163,184,.25);
+}
+
+.promo-word-card{
+  padding:14px 18px;
+  border:none;
+  border-radius:14px;
+  background:#1e3a8a;
+  color:#f8fafc;
+  font-size:18px;
+  font-weight:900;
+  cursor:grab;
+}
+
+.promo-word-card.used{
+  opacity:.35;
+  pointer-events:none;
+}
+
+.promo-drop-zone{
+  min-height:110px;
+  padding:18px;
+  margin:20px 0;
+  border:3px dashed rgba(250,204,21,.75);
+  border-radius:18px;
+  background:rgba(2,6,23,.75);
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  justify-content:flex-start;
+  font-size:18px;
+  color:#cbd5e1;
+}
+
+.promo-drop-zone.filled{
+  color:#f8fafc;
+}
+
+.promo-build-controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.promo-word-card,
+.promo-word-card.decoy{
+  background:#1e3a8a !important;
+  color:#f8fafc !important;
+}
+
+.promo-word-card.used{
+  opacity:.35;
+  pointer-events:none;
+}
+.promo-word-card.placed{
+  cursor:pointer;
+}
+.fixed-word{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:110px;
+  padding:14px 18px;
+  border-radius:14px;
+  background:#0f172a;
+  border:2px solid #38bdf8;
+  color:#f8fafc;
+  font-size:20px;
+  font-weight:900;
+}
+
+.drop-slot{
+  width:120px;
+  height:58px;
+  border:2px dashed rgba(250,204,21,.7);
+  border-radius:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 10px;
+}
+
+
+/* ===== ROOM2 MISSION3 신문기사 B 분석 ===== */
+.news2-fixed-wrap{
+  position:relative;
+  width:100%;
+  max-width:1050px;
+  margin:0 auto;
+  aspect-ratio:1518 / 1036;
+  overflow:hidden;
+  border-radius:18px;
+  background:white;
+}
+.news2-fixed-image{
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  display:block;
+  border-radius:18px;
+}
+.news2-hotspot{
+  position:absolute;
+  border:3px solid transparent;
+  background:rgba(250,204,21,0);
+  border-radius:14px;
+  cursor:pointer;
+  z-index:20;
+}
+.news2-hotspot.found{
+  border-color:#facc15;
+  background:rgba(250,204,21,.2);
+  box-shadow:0 0 18px rgba(250,204,21,.8);
+}
+.news2-hotspot.expect-title{ left:56.2%; top:9.0%; width:9.6%; height:5.2%; }
+.news2-hotspot.anxiety-title{ left:69.3%; top:9.0%; width:8.5%; height:5.2%; }
+.news2-hotspot.expect-body{ left:9.0%; top:66.0%; width:58%; height:4.6%; }
+.news2-hotspot.anxiety-body{ left:9.0%; top:70.2%; width:46%; height:4.6%; }
+.news2-clue-list{
+  min-height:42px;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(2,6,23,.45);
+  border:1px solid rgba(96,165,250,.35);
+  margin-bottom:12px;
+}
+.news2-clue-chip{
+  display:inline-block;
+  margin:4px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#1e3a8a;
+  color:#f8fafc;
+  font-weight:900;
+}
+.news2-subject-bank,
+.news2-subject-zone{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:16px;
+  border-radius:18px;
+  background:rgba(15,23,42,.65);
+  border:1px solid rgba(148,163,184,.25);
+  margin:16px 0;
+}
+.news2-subject-zone{
+  min-height:90px;
+  border:3px dashed rgba(250,204,21,.7);
+  align-items:center;
+}
+.news2-word-card{
+  padding:13px 16px;
+  border:none;
+  border-radius:14px;
+  background:#1e3a8a;
+  color:#f8fafc;
+  font-size:18px;
+  font-weight:900;
+  cursor:pointer;
+}
+.news2-word-card.used{
+  opacity:.35;
+  pointer-events:none;
+}
+.news2-word-card.placed{
+  background:#2563eb;
+}
+.promo-sentence-zone{
+  gap:12px;
+  align-items:center;
+}
+
+.drop-slot{
+  min-width:120px;
+  height:58px;
+  border:2px dashed rgba(250,204,21,.7);
+  border-radius:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(2,6,23,.45);
+}
+  
+/* ===== ROOM2 MISSION3 STEP2 기대/불안 문장 색상 구분 ===== */
+.news2-hotspot.expect-selected{
+  border-color:#22c55e !important;
+  background:rgba(34,197,94,.18) !important;
+  box-shadow:0 0 18px rgba(34,197,94,.75) !important;
+}
+.news2-hotspot.anxiety-selected{
+  border-color:#ef4444 !important;
+  background:rgba(239,68,68,.18) !important;
+  box-shadow:0 0 18px rgba(239,68,68,.75) !important;
+}
+.news2-clue-chip.expect-chip{
+  background:#166534 !important;
+}
+.news2-clue-chip.anxiety-chip{
+  background:#7f1d1d !important;
+}
+.news2-hotspot.core-body{
+  left:4.8%;
+  top:87.8%;
+  width:77%;
+  height:5.4%;
+  border-radius:999px;
+}
+
+.news2-hotspot.core-selected{
+  border:5px solid #ef4444 !important;
+  background:rgba(239,68,68,.10) !important;
+  box-shadow:0 0 22px rgba(239,68,68,.8) !important;
+}
+
+.news2-next-box{
+  margin:14px 0 18px;
+  padding:18px;
+  border-radius:16px;
+  background:rgba(2,6,23,.55);
+  border:1px solid rgba(96,165,250,.35);
+  color:#e2e8f0;
+  font-size:18px;
+  line-height:1.6;
+  font-weight:800;
+}
+
+  
+/* ===== ROOM3 MISSION1 공익광고 영상 분석 ===== */
+#room3Mission1 .panel{
+  max-width:1100px;
+  margin:18px auto;
+  padding:24px;
+}
+
+.mission-video{
+  width:100%;
+  max-width:850px;
+  display:block;
+  margin:20px auto 28px;
+  border-radius:18px;
+  border:2px solid rgba(96,165,250,.45);
+  background:#020617;
+  box-shadow:0 0 28px rgba(37,99,235,.3);
+}
+
+.mission-step-box{
+  margin:24px 0;
+  padding:22px;
+  border-radius:20px;
+  background:rgba(15,23,42,.75);
+  border:1px solid rgba(148,163,184,.3);
+}
+
+.matching-wrap{
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr 120px 1fr;
+  gap:18px;
+  align-items:stretch;
+  margin:20px 0;
+}
+
+.match-column{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.match-card{
+  min-height:86px;
+  padding:14px;
+  border-radius:16px;
+  border:2px solid rgba(96,165,250,.35);
+  background:rgba(2,6,23,.85);
+  color:#f8fafc;
+  font-size:17px;
+  font-weight:800;
+  line-height:1.4;
+  cursor:pointer;
+}
+
+.match-card.selected{
+  border-color:#facc15;
+  box-shadow:0 0 16px rgba(250,204,21,.6);
+}
+
+.match-card.matched{
+  border-color:#22c55e;
+  background:rgba(22,101,52,.45);
+}
+
+.match-svg{
+  width:120px;
+  height:100%;
+  min-height:300px;
+  overflow:visible;
+}
+
+.match-line{
+  stroke:#facc15;
+  stroke-width:5;
+  stroke-linecap:round;
+  filter:drop-shadow(0 0 6px rgba(250,204,21,.8));
+}
+
+@media (max-width:900px){
+  .matching-wrap{
+    grid-template-columns:1fr;
+  }
+
+  .match-svg{
+    display:none;
+  }
+}
+
+  
+
+/* ROOM3 단계 화면 초기 숨김 강제 */
+#room3Step2Box.hidden,
+#room3Step3Box.hidden,
+#room3Mission2Step2Box.hidden,
+#room3Mission2Step3Box.hidden,
+#room3Mission2Step4Box.hidden {
+  display: none !important;
+}
+
+
+/* ===== ROOM3 MISSION2 단계별 카드 선택 ===== */
+.mission-divider{
+  margin:28px 0;
+  border:none;
+  border-top:1px solid rgba(148,163,184,.25);
+}
+
+.sub-mini{
+  margin-top:6px;
+  margin-bottom:14px;
+  color:#cbd5e1;
+  font-size:15px;
+}
+
+.multi-card-wrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.multi-card{
+  padding:14px 18px;
+  border-radius:14px;
+  border:2px solid rgba(96,165,250,.3);
+  background:#172554;
+  color:white;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.multi-card.selected{
+  border-color:#facc15;
+  box-shadow:0 0 14px rgba(250,204,21,.6);
+  background:#1e3a8a;
+}
+
+  </style>
+</head>
+<body>
+  <!-- INTRO -->
+  <section id="intro" class="screen active">
+    <div class="intro-terminal">
+      <div class="terminal-top">
+        <span class="red-dot"></span>
+        <span class="yellow-dot"></span>
+        <span class="green-dot"></span>
+        <span class="terminal-title">MEDIA PURIFICATION HQ // 긴급 지령 수신</span>
+      </div>
+
+      <div class="terminal-body">
+        <h1 class="intro-title">MEDIA LOCKDOWN</h1>
+        <p class="intro-subtitle">도시 정보망 오염 경보 발령</p>
+
+        <div id="typingText" class="typing-text"></div>
+
+        <div id="missionGuide" class="mission-guide hidden">
+          <h2>미디어 정화 작전 개요</h2>
+          <div class="flow-box">
+            <div class="flow-card">요원별 임무 분담</div><div class="arrow">→</div>
+            <div class="flow-card">매체 단서 분석</div><div class="arrow">→</div>
+            <div class="flow-card">보안 코드 획득</div><div class="arrow">→</div>
+            <div class="flow-card final-card">FINAL 정화 보고</div>
+          </div>
+          <div class="mission-rules">
+            <div><strong>작전 시간</strong><p>임무를 선택하는 순간부터 17분 안에 분석을 완료해야 합니다.</p></div>
+            <div><strong>요원 역할</strong><p>팀의 요원들은 각자 다른 임무를 맡아 매체 속 단서를 찾아냅니다.</p></div>
+            <div><strong>정화 목표</strong><p>관점, 의도, 선택과 배제를 밝혀 FINAL 분석 보고를 완성합니다.</p></div>
+          </div>
+          <button class="main-btn" onclick="showScreen('roomSelect')">작전 투입</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 방 선택 -->
+  <section id="roomSelect" class="screen">
+    <div class="panel">
+      <h1 id="teamTitle">담당 임무를 선택하세요</h1>
+      <p class="sub">각자 맡은 임무를 선택해 매체 속 단서를 분석하세요.<br>모든 임무를 해결한 뒤 마지막 팀 미션으로 이동할 수 있습니다.</p>
+      <div class="room-grid">
+        <button class="room-btn" onclick="openRoom1Mission1()">임무 1<span>SNS 의도 파악<br>신문기사 A 분석<br>광고 분석</span></button>
+        <button class="room-btn" onclick="startRoom2()">
+  임무 2
+  <span>광고 분석<br>홍보물 분석<br>신문기사 B 분석</span>
+</button>
+        <button class="room-btn" onclick="startRoom3()">임무 3<span>공익광고 영상 분석</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 임무 1 - MISSION 1 -->
+  <section id="room1Mission1" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('roomSelect')">← 이전으로</button><div>임무 1 - MISSION 1</div><div class="timer">17:00</div></div>
+    <div class="room-layout">
+      <div class="sns-panel">
+        <h2 class="mission-label">임무 1 - MISSION 1</h2>
+        <h1>작성자 파악하기</h1>
+        <p class="mission-desc">SNS 게시물을 보고, 사람들이 작성자에 대해 확정지을 수 있는 사실을 모두 선택하세요.</p>
+        <img src="./image/sns1.png" alt="SNS 게시물" class="sns-image" />
+      </div>
+      <div class="question-panel">
+        <h2>분석 질문</h2>
+        <p class="question-text">이 SNS 게시물을 본 사람들이 작성자에 대해 확정지을 수 있는 사실은 무엇인가?</p>
+        <div class="choice-list">
+          <label class="check-choice"><input type="checkbox" value="1"><span>작성자는 결혼한 사람이다.</span></label>
+          <label class="check-choice"><input type="checkbox" value="2"><span>작성자는 배우자와 사이가 좋다.</span></label>
+          <label class="check-choice"><input type="checkbox" value="3"><span>작성자는 꽃집에서 일한다.</span></label>
+          <label class="check-choice"><input type="checkbox" value="4"><span>작성자는 배우자에게 꽃을 요구했다.</span></label>
+          <label class="check-choice"><input type="checkbox" value="5"><span>작성자는 부부의 날을 중요하게 생각한다.</span></label>
+          <label class="check-choice"><input type="checkbox" value="6"><span>작성자는 행복한 삶을 살고 있다.</span></label>
+          <label class="check-choice"><input type="checkbox" value="7"><span>작성자는 오늘 기분이 좋다.</span></label>
+        </div>
+        <button class="submit-btn" onclick="checkRoom1Mission1()">분석 결과 제출하기</button>
+        <div id="room1Mission1Feedback" class="feedback-box"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 두 번째 SNS 분석 안내 -->
+  <section id="sns2IntroPage" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('room1Mission1')">← 이전으로</button><div>임무 1 - 두 번째 SNS 분석</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>두 번째 SNS 분석하기</h1>
+      <p class="sub">첫 번째 SNS 분석을 완료했습니다.<br>이제 다른 SNS 게시물에서 작성자의 상황과 의도를 분석합니다.</p>
+      <button class="main-btn" onclick="showScreen('room1Mission2Step1')">다음으로</button>
+    </div>
+  </section>
+
+  <!-- 임무 1 - MISSION 2 : STEP 1 -->
+  <section id="room1Mission2Step1" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('sns2IntroPage')">← 이전으로</button><div>임무 1 - MISSION 2 / STEP 1</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>작성자의 현재 상황 추론하기</h1>
+      <p class="sub">SNS 게시물을 먼저 보고, 작성자의 상황을 가장 잘 보여 주는 설명 2개를 선택하세요.</p>
+      <img src="./image/sns2.png" alt="두 번째 SNS 게시물" class="hint-photo">
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="checkbox" value="A"><span>여유롭고 한가로운 주말을 보내고 있다.</span></label>
+        <label class="check-choice"><input type="checkbox" value="B"><span>아이를 돌보는 일이 쉽지 않다.</span></label>
+        <label class="check-choice"><input type="checkbox" value="C"><span>아이에게 10가지 이상의 장난감이 있다.</span></label>
+        <label class="check-choice"><input type="checkbox" value="D"><span>엄마(보호자)가 쉬고 있다.</span></label>
+        <label class="check-choice"><input type="checkbox" value="E"><span>아이의 엄마는 주말에도 쉴 수 없다.</span></label>
+        <label class="check-choice"><input type="checkbox" value="F"><span>평소 정리하지 않는 지저분한 집이다.</span></label>
+        <label class="check-choice"><input type="checkbox" value="G"><span>아이는 혼자서 잘 놀아 손이 덜 가는 성격이다.</span></label>
+      </div>
+      <button class="submit-btn" onclick="checkRoom1Mission2Step1Situation()">분석 결과 제출하기</button>
+      <div id="step1SituationFeedback" class="feedback-box"></div>
+    </div>
+  </section>
+
+  <!-- 임무 1 - MISSION 2 : STEP 2 -->
+  <section id="room1Mission2Step2" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('room1Mission2Step1')">← 이전으로</button><div>임무 1 - MISSION 2 / STEP 2</div><div class="timer">17:00</div></div>
+    <div class="room-layout">
+      <div class="sns-panel">
+        <h2 class="mission-label">STEP 2</h2>
+        <h1>그렇게 생각하게 한 단서 찾기</h1>
+        <p class="mission-desc">작성자의 상황을 그렇게 선택하게 만든 사진 속 단서 7개를 터치하세요.</p>
+        <div class="hotspot-wrap">
+          <img src="./image/sns2.png" alt="두 번째 SNS 게시물" class="sns-image">
+          <button class="hotspot" style="left:80%; top:15%;" onclick="collectClue(this, '주말 아침')"></button>
+          <button class="hotspot" style="left:27%; top:27%;" onclick="collectClue(this, '장난감 자동차를 탄 아이')"></button>
+          <button class="hotspot" style="left:42%; top:35%;" onclick="collectClue(this, '바닥에 놓인 검은 가방')"></button>
+          <button class="hotspot" style="left:49%; top:62%;" onclick="collectClue(this, '바닥에 흩어진 블록')"></button>
+          <button class="hotspot" style="left:56%; top:42%;" onclick="collectClue(this, '정돈되지 않은 책')"></button>
+          <button class="hotspot" style="left:50%; top:20%;" onclick="collectClue(this, '쏟아진 책과 책장 주변')"></button>
+          <button class="hotspot" style="left:27%; top:66%;" onclick="collectClue(this, '쏟아진 장난감 상자')"></button>
+        </div>
+      </div>
+      <div class="question-panel">
+        <h2>찾은 단서</h2>
+        <p class="question-text">찾은 단서가 여기에 쌓입니다. 총 7개를 찾으면 자동으로 다음 단계로 이동합니다.</p>
+        <ul id="clueList" class="clue-list"></ul>
+        <div id="clueFeedback" class="feedback-box"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 임무 1 - MISSION 2 : STEP 3 -->
+  <section id="room1Mission2Step3" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('room1Mission2Step2')">← 이전으로</button><div>임무 1 - MISSION 2 / STEP 3</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>SNS 게시물의 의도 파악하기</h1>
+      <p class="sub">작성자가 이 SNS 게시물을 올린 의도로 가장 적절한 것을 하나만 선택하세요.</p>
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="step3Intent" value="A"><span>아이에게 장난감이 많다는 사실을 자랑하려고</span></label>
+        <label class="check-choice"><input type="radio" name="step3Intent" value="B"><span>힘든 육아 상황을 공유하고 공감받기 위하여</span></label>
+        <label class="check-choice"><input type="radio" name="step3Intent" value="C"><span>정리되지 않은 집을 보고 반성하려고</span></label>
+        <label class="check-choice"><input type="radio" name="step3Intent" value="D"><span>아이가 혼자 잘 노는 성격이라는 점을 강조하려고</span></label>
+        <label class="check-choice"><input type="radio" name="step3Intent" value="E"><span>주말 아침에 여유롭게 쉬고 있음을 보여주려고</span></label>
+      </div>
+      <button class="submit-btn" onclick="checkRoom1Mission2Step3()">의도 분석 제출하기</button>
+      <div id="step3Feedback" class="feedback-box"></div>
+    </div>
+  </section>
+
+  <!-- 미션1 힌트 -->
+  <section id="room1HintPage" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('room1Mission2Step3')">← 이전으로</button><div>MISSION 1 힌트</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>MISSION 1 힌트 획득</h1>
+      <p class="sub">첫 번째 SNS 사진에서 파란색 꽃의 개수를 확인하세요.</p>
+      <div class="question-text" style="font-size:22px; text-align:center;">정확히 <strong>꽃</strong>입니다. </div>
+      <button class="main-btn" onclick="showScreen('room1HintPhoto')">사진 보기</button>
+    </div>
+  </section>
+
+  <section id="room1HintPhoto" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('room1HintPage')">← 이전으로</button><div>힌트 사진 확인</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>첫 번째 SNS 사진</h1>
+      <p class="sub">비밀번호 힌트와 관련된 부분을 다시 확인하세요.</p>
+      <img src="./image/sns1.png" alt="첫 번째 SNS 사진" class="hint-photo">
+      <button class="main-btn" onclick="showScreen('articleMissionIntro')">기사 분석 시작</button>
+    </div>
+  </section>
+
+  <!-- 기사 분석 안내 -->
+  <section id="articleMissionIntro" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('room1HintPhoto')">← 이전으로</button><div>MISSION 2</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>신문기사 분석 작전</h1>
+      <p class="sub">신문기사의 표제, 이미지, 본문을 분석하여<br>기사가 어떤 관점으로 현실을 재현하는지 밝혀내십시오.</p>
+      <button class="main-btn" onclick="showScreen('articleStep1')">기사 분석 시작</button>
+    </div>
+  </section>
+
+  <!-- 기사 분석 STEP1 -->
+  <section id="articleStep1" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('articleMissionIntro')">← 이전으로</button><div>MISSION 2 / STEP 1 - 핵심 단어 추적</div><div class="timer">17:00</div></div>
+    <div class="room-layout">
+      <div class="sns-panel">
+        <h2 class="mission-label">기사 데이터 복구</h2>
+        <h1>표제와 이미지에서 핵심 단어 찾기</h1>
+        <p class="mission-desc">기사 표제와 이미지 속에서 이 기사가 중요하게 강조하는 핵심 단어 2개를 직접 클릭하세요.</p>
+        <div class="article-fixed-wrap">
+          <img src="./image/AI_news1.png" class="article-fixed-image" alt="AI 기사">
+          <button class="article-word-hotspot word-action" onclick="collectArticleKeyword(this, '실행력')"></button>
+          <button class="article-word-hotspot word-trust" onclick="collectArticleKeyword(this, '신뢰')"></button>
+        </div>
+      </div>
+      <div class="question-panel">
+        <h2>수집한 핵심 단어</h2>
+        <ul id="articleKeywordList" class="clue-list"></ul>
+        <p class="question-text">수집한 단어를 바탕으로, 이 기사는 AI 산업의 미래를 어떻게 바라보고 있나요?</p>
+        <div class="choice-list">
+          <label class="check-choice"><input type="radio" name="articleViewStep1" value="positive"><span>긍정적으로 바라본다.</span></label>
+          <label class="check-choice"><input type="radio" name="articleViewStep1" value="negative"><span>부정적으로 바라본다.</span></label>
+        </div>
+        <button class="submit-btn" onclick="checkArticleStep1()">관점 판단하기</button>
+        <div id="articleStep1Feedback" class="feedback-box"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cityFailPage" class="screen">
+    <div class="failure-scene"><div class="failure-overlay">
+      <h1>정보 정화 실패</h1>
+      <p>기사의 핵심 단어를 잘못 해석했습니다.</p>
+      <p class="danger-text">도시 정보망 붕괴 진행 중...</p>
+      <button class="main-btn" onclick="showScreen('articleStep1')">다시 분석하기</button>
+    </div></div>
+  </section>
+
+  <!-- 기사 분석 STEP2 -->
+  <section id="articleStep2" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('articleStep1')">← 이전으로</button><div>MISSION 2 / STEP 2 - 이미지 인상 분석</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>이미지 감정 데이터 복구</h1>
+      <p class="sub">기사의 관점을 고려할 때, 이미지가 독자에게 주는 인상을 아래에서 3개 선택하세요.</p>
+      <img src="./image/AI_news1.png" class="hint-photo" alt="AI 기사">
+      <div class="flower-field">
+        <button class="flower" onclick="toggleFlower(this, '위험하다')">위험하다</button>
+        <button class="flower correct-flower" onclick="toggleFlower(this, '미래적이다')">미래적이다</button>
+        <button class="flower" onclick="toggleFlower(this, '혼란스럽다')">혼란스럽다</button>
+        <button class="flower" onclick="toggleFlower(this, '불안하다')">불안하다</button>
+        <button class="flower correct-flower" onclick="toggleFlower(this, '발전적이다')">발전적이다</button>
+        <button class="flower" onclick="toggleFlower(this, '후퇴하고 있다')">후퇴하고 있다</button>
+        <button class="flower correct-flower" onclick="toggleFlower(this, '신뢰할 수 있다')">신뢰할 수 있다</button>
+        <button class="flower" onclick="toggleFlower(this, '두렵다')">두렵다</button>
+        <button class="flower" onclick="toggleFlower(this, '위협적이다')">위협적이다</button>
+        <button class="flower" onclick="toggleFlower(this, '불확실하다')">불확실하다</button>
+      </div>
+      <button class="submit-btn" onclick="checkArticleStep2Flowers()">카드 선택 완료</button>
+      <div id="flowerFeedback" class="feedback-box"></div>
+      <div id="imageMeaningQuestion" class="hidden">
+        <p class="question-text">이 기사 이미지가 독자에게 보여주고 싶은 AI 산업의 모습은 무엇인가요?</p>
+        <div class="choice-list">
+          <label class="check-choice"><input type="radio" name="imageMeaning" value="A"><span>AI 산업은 위험하고 통제하기 어려운 대상으로 보인다.</span></label>
+          <label class="check-choice"><input type="radio" name="imageMeaning" value="B"><span>AI 산업은 혼란스럽고 불안한 미래를 만들 것으로 보인다.</span></label>
+          <label class="check-choice"><input type="radio" name="imageMeaning" value="C"><span>AI 산업은 후퇴하고 있으며 경쟁력이 약해지고 있는 분야로 보인다.</span></label>
+          <label class="check-choice"><input type="radio" name="imageMeaning" value="D"><span>AI 산업은 위험보다 미래 성장 가능성에 가까운 대상으로 보인다.</span></label>
+        </div>
+        <button class="submit-btn" onclick="checkImageMeaning()">이미지 의미 제출하기</button>
+        <div id="imageMeaningFeedback" class="feedback-box"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 기사 분석 STEP3 -->
+  <section id="articleStep3" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('articleStep2')">← 이전으로</button><div>MISSION 2 / STEP 3 - 배제된 정보 탐색</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>배제 데이터 탐색</h1>
+      <p class="sub">모든 기사는 현실의 일부만 선택해서 보여 줍니다.<br>다음 중, 이 기사가 의도적으로 배제한 내용과 관계있는 것을 선택하세요.</p>
+      <div class="bookshelf">
+        <button class="book" onclick="selectBook(this, false)">1. AI 시대 환영합니다</button>
+        <button class="book" onclick="selectBook(this, false)">2. 미래를 바꾸는 AI 혁신</button>
+        <button class="book correct-book" onclick="selectBook(this, true)">3. 자동화 시대,<br>사라지는 직업들</button>
+        <button class="book" onclick="selectBook(this, false)">4. 정보화 시대가 주는 기쁨</button>
+        <button class="book" onclick="selectBook(this, false)">5. 쉽게 배우는 AI 활용법</button>
+        <button class="book" onclick="selectBook(this, false)">6. 우리 생활 속 인공지능</button>
+        <button class="book" onclick="selectBook(this, false)">7. AI와 함께하는 미래 산업</button>
+      </div>
+      <div id="bookResult" class="feedback-box"></div>
+    </div>
+  </section>
+
+  <section id="articleStep3Fail" class="screen">
+    <div class="failure-scene"><div class="failure-overlay">
+      <h1>정보 정화 실패</h1>
+      <p>기사가 의도적으로 배제한 정보를 찾아내지 못했습니다.</p>
+      <p class="danger-text">도시 정보망 붕괴 진행 중...</p>
+      <button class="main-btn" onclick="showScreen('articleStep3')">다시 분석하기</button>
+    </div></div>
+  </section>
+
+  <section id="articleStep3Success" class="screen">
+    <div class="topbar"><div>MISSION 2 COMPLETE</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>배제 정보 확인 완료</h1>
+      <p class="sub">이 기사는 AI 산업의 성장 가능성을 강조했지만,<br>AI 확대 과정에서 생길 수 있는 실업과 불안 문제는 거의 다루지 않았습니다.</p>
+      <div class="hint-box">
+        <h2>MISSION 2 힌트</h2>
+        <p>이 기사가 배제한 정보가 숨어 있던 책장 카드의 번호는?</p>
+      </div>
+      <button class="main-btn" onclick="showScreen('articleHintCardImagePage')">카드 번호 확인하기</button>
+      <button class="main-btn" onclick="showScreen('adMissionStep1')">세 번째 미션으로 이동</button>
+    </div>
+  </section>
+
+  <section id="articleHintCardImagePage" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('articleStep3Success')">← 이전으로</button><div>MISSION 2 힌트 확인</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>MISSION 2 힌트 카드</h1>
+      <p class="sub">배제된 정보가 몇 번째 카드였는지 확인하세요.</p>
+      <img src="./image/card_hint.png" class="hint-photo" alt="카드 힌트">
+      <div class="question-text" style="font-size:22px; text-align:center;">두 번째 힌트 숫자: <strong>3</strong></div>
+      <button class="main-btn" onclick="showScreen('articleStep3Success')">돌아가기</button>
+    </div>
+  </section>
+
+  <!-- 광고 분석 STEP1 -->
+  <section id="adMissionStep1" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('articleStep3Success')">← 이전으로</button><div>MISSION 3 / STEP 1 - 광고 내용 파악</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>광고 문구와 이미지 파악하기</h1>
+      <p class="sub">광고 속 여자아이와 남자아이에게 사용된 문구와 이미지를 각각 분석하세요.</p>
+      <img src="./image/clothes.png" class="hint-photo" alt="아동복 광고">
+      <div class="question-text">1. 광고 문구를 직접 입력하세요.</div>
+      <div class="choice-list">
+        <div class="question-text">
+          여자아이 광고 문구
+        </div>
+
+      <input
+        id="girlAdText"
+        type="text"
+        placeholder="광고 문구를 직접 입력하세요"
+        class="answer-input"
+      />
+
+      <div class="question-text" style="margin-top:18px;">
+       남자아이 광고 문구
+      </div>
+
+      <input
+        id="boyAdText"
+        type="text"
+        placeholder="광고 문구를 직접 입력하세요"
+        class="answer-input"
+      />
+      </div>
+<div class="question-text" style="margin-top:22px;">
+  2. 이미지 위의 그림을 직접 클릭하세요. 클릭하면 선택한 단어가 이미지 위에 표시됩니다.
+</div>
+
+<h2 style="color:#facc15;">여자아이와 남자아이의 광고 이미지 요소</h2>
+<div class="ad-hotspot-wrap">
+  <img src="./image/ad.png" class="ad-hotspot-image" alt="이미지 선택지">
+
+  <button class="ad-hotspot"
+style="left:13.5%; top:20%;"
+onclick="selectAdHotspot(this, '분홍색')"></button>
+
+<button class="ad-hotspot"
+style="left:12.5%; top:52%;"
+onclick="selectAdHotspot(this, '치마')"></button>
+
+<button class="ad-hotspot"
+style="left:13%; top:80%;"
+onclick="selectAdHotspot(this, '거울')"></button>
+
+<button class="ad-hotspot"
+style="left:68%; top:20%;"
+onclick="selectAdHotspot(this, '파란색')"></button>
+
+<button class="ad-hotspot"
+style="left:49%; top:52%;"
+onclick="selectAdHotspot(this, '바지')"></button>
+
+<button class="ad-hotspot"
+style="left:50%; top:81%;"
+onclick="selectAdHotspot(this, '축구공')"></button>
+</div>
+
+<p class="question-text">
+  여자아이 이미지 요소: 
+  <span id="girlSelectedWords"></span>
+</p>
+
+<p class="question-text">
+  남자아이 이미지 요소: 
+  <span id="boySelectedWords"></span>
+</p>
+      <button class="submit-btn" onclick="checkAdMissionStep1()">STEP 1 제출하기</button>
+      <div id="adStep1Feedback" class="feedback-box"></div>
+    </div>
+  </section>
+
+  <!-- 광고 분석 STEP2 -->
+  <section id="adMissionStep2" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('adMissionStep1')">← 이전으로</button><div>MISSION 3 / STEP 2 - 성별 고정관념 판단</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>광고가 만든 인상 판단하기</h1>
+      <p class="sub">이 광고가 여자아이와 남자아이를 어떤 이미지로 보여 주는지 생각해 보세요.</p>
+      <img src="./image/clothes.png" class="hint-photo" alt="아동복 광고">
+      <div class="question-text">이 광고에 대한 설명으로 가장 적절한 것을 고르세요.</div>
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="adStereotype" value="A"><span>성별과 관계없이 모든 아이의 다양한 모습을 보여 준다.</span></label>
+        <label class="check-choice"><input type="radio" name="adStereotype" value="B"><span>여자아이는 예쁘고 꾸미는 존재, 남자아이는 용감하고 운동하는 존재처럼 표현한다.</span></label>
+        <label class="check-choice"><input type="radio" name="adStereotype" value="C"><span>옷의 가격과 기능을 객관적으로 설명한다.</span></label>
+        <label class="check-choice"><input type="radio" name="adStereotype" value="D"><span>성별과 관련 없는 자연 풍경을 중심으로 표현한다.</span></label>
+      </div>
+      <button class="submit-btn" onclick="checkAdMissionStep2()">STEP 2 제출하기</button>
+      <div id="adStep2Feedback" class="feedback-box"></div>
+    </div>
+  </section>
+
+  <section id="adMissionSuccess" class="screen">
+    <div class="topbar"><div>MISSION 3 COMPLETE</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>광고 분석 완료</h1>
+      <p class="sub">이 광고는 성별에 대한 고정관념을 문구와 이미지로 강화하고 있었습니다.</p>
+      <div class="hint-box">
+        <h2>MISSION 3 힌트</h2>
+        <p>광고 속 문구와 이미지를 다시 떠올려 보세요.</p>
+        <p>남자 아이와 여자 아이가 가위바위보 해서 여자아이가 이기면 1, 남자아이가 이기면 2.</p>
+      </div>
+      <button class="main-btn" onclick="showScreen('articleHintCardPage')">최종 계산 화면으로 이동</button>
+    </div>
+  </section>
+
+  <!-- 최종 계산 화면 -->
+  <section id="articleHintCardPage" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="showScreen('adMissionSuccess')">← 이전으로</button><div>첫 번째 방 최종 코드 계산</div><div class="timer">17:00</div></div>
+    <div class="panel">
+      <h1>첫 번째 방 최종 코드 계산</h1>
+      <p class="sub">미션 1, 2, 3에서 얻은 힌트를 조합하여 첫 번째 방의 두 자리 코드를 만드세요.</p>
+      <div class="calc-row">
+        <div class="calc-card">
+          <strong>미션 1</strong>
+          <select id="room1MissionHint1"><option value="">?</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
+          <br><button class="submit-btn" onclick="showScreen('calcMission1HintPage')">힌트 사진</button>
+        </div>
+        <div class="calc-symbol">×</div>
+        <div class="calc-card">
+          <strong>미션 2</strong>
+          <select id="room1MissionHint2"><option value="">?</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
+          <br><button class="submit-btn" onclick="showScreen('calcMission2HintPage')">힌트 카드</button>
+        </div>
+        <div class="calc-symbol">+</div>
+        <div class="calc-card">
+          <strong>미션 3</strong>
+          <select id="room1MissionHint3"><option value="">?</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
+          <br><button class="submit-btn" onclick="showScreen('calcMission3HintPage')">힌트 보기</button>
+        </div>
+      </div>
+      <button class="main-btn" onclick="checkFinalCalc()">계산 결과 확인하기</button>
+      <div id="finalCalcFeedback" class="feedback-box"></div>
+    </div>
+  </section>
+
+
+  <!-- 최종 계산 화면 전용 힌트 확인 페이지들 -->
+  <section id="calcMission1HintPage" class="screen">
+    <div class="topbar">
+      <button class="back-btn" onclick="showScreen('articleHintCardPage')">← 계산 화면으로</button>
+      <div>MISSION 1 힌트 확인</div>
+      <div class="timer">17:00</div>
+    </div>
+    <div class="panel">
+      <h1>MISSION 1 힌트 사진</h1>
+      <p class="sub">첫 번째 SNS 사진에서 파란색 꽃이 몇 송이인지 확인하세요.</p>
+      <img src="./image/sns1.png" alt="첫 번째 SNS 사진" class="hint-photo">
+      <button class="main-btn" onclick="showScreen('articleHintCardPage')">계산 화면으로 돌아가기</button>
+    </div>
+  </section>
+
+  <section id="calcMission2HintPage" class="screen">
+    <div class="topbar">
+      <button class="back-btn" onclick="showScreen('articleHintCardPage')">← 계산 화면으로</button>
+      <div>MISSION 2 힌트 확인</div>
+      <div class="timer">17:00</div>
+    </div>
+    <div class="panel">
+      <h1>MISSION 2 힌트 카드</h1>
+      <p class="sub">배제된 정보가 몇 번째 카드였는지 확인하세요.</p>
+      <img src="./image/card_hint.png" class="hint-photo" alt="카드 힌트">
+      <button class="main-btn" onclick="showScreen('articleHintCardPage')">계산 화면으로 돌아가기</button>
+    </div>
+  </section>
+
+  <section id="calcMission3HintPage" class="screen">
+    <div class="topbar">
+      <button class="back-btn" onclick="showScreen('articleHintCardPage')">← 계산 화면으로</button>
+      <div>MISSION 3 힌트 확인</div>
+      <div class="timer">17:00</div>
+    </div>
+    <div class="panel">
+      <h1>MISSION 3 힌트</h1>
+      <p class="sub">광고 속 문구와 이미지가 어떤 성별 고정관념을 만들었는지 다시 생각해 보세요.</p>
+
+      <img src="./image/clothes.png" class="hint-photo" alt="아동복 광고">
+
+      <div class="hint-box">
+        <h2>세 번째 숫자를 추론하는 단서</h2>
+        <p><strong>넌센스 퀴즈</strong>여자아이와 남자아이가 가위바위보를 해서</p>
+        <p>여자아이가 이기면 <strong>1</strong></p>
+        <p>남자아이가 이기면 <strong>2</strong></p>
+      </div>
+
+      <button class="main-btn" onclick="showScreen('articleHintCardPage')">계산 화면으로 돌아가기</button>
+    </div>
+  </section>
+
+  
+
+  <!-- 임무 2 - 광고 분석 -->
+<section id="room2Intro" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('roomSelect')">← 이전으로</button>
+    <div>임무 2</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>임무 2 분석 작전</h1>
+    <p class="sub">
+      광고, 홍보물, 신문기사 B를 분석하여<br>
+      매체가 현실을 어떤 방식으로 보여 주는지 밝혀내세요.
+    </p>
+
+    <button class="main-btn" onclick="showScreen('room2AdStep1')">
+      MISSION 1 광고 분석 시작
+    </button>
+  </div>
+</section>
+<section id="room2PromoStep1" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2Mission2Intro')">← 이전으로</button>
+    <div>임무 2 / MISSION 2 / STEP 1</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="room2-step3-layout">
+    <div class="panel room2-step3-question">
+      <h1><strong>에너지의 날</strong> 홍보물 문구 해독</h1>
+      <p class="sub">“불을 끄고, 별을 켜다”에 담긴 의미를 찾아보세요.</p>
+
+      <div class="question-text">1. “불을 끄고”의 의미로 가장 알맞은 것은?</div>
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="promoPhrase1" value="A"><span>밤에 아무 활동도 하지 말자는 뜻</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase1" value="B"><span>에너지 사용을 줄이자는 뜻</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase1" value="C"><span>별빛보다 전등이 더 중요하다는 뜻</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase1" value="D"><span>도시의 불빛을 더 밝게 만들자는 뜻</span></label>
+      </div>
+
+      <div class="question-text" style="margin-top:18px;">2. 별이 잘 보이는 하늘은 어떤 하늘인가요?</div>
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="promoPhrase2" value="A"><span>전등과 간판이 아주 밝게 켜진 하늘</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase2" value="B"><span>공기와 밤하늘이 맑고 깨끗한 하늘</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase2" value="C"><span>건물이 많아 별을 가리는 하늘</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase2" value="D"><span>항상 구름이 많은 하늘</span></label>
+      </div>
+
+      <div class="question-text" style="margin-top:18px;">3. “별을 켜다”의 의미로 가장 알맞은 것은?</div>
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="promoPhrase3" value="A"><span>전등을 더 많이 켜서 밤을 밝히자는 뜻</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase3" value="B"><span>에너지를 절약해 깨끗한 환경을 만들자는 뜻</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase3" value="C"><span>별 모양 장식을 많이 만들자는 뜻</span></label>
+        <label class="check-choice"><input type="radio" name="promoPhrase3" value="D"><span>밤하늘을 보지 말자는 뜻</span></label>
+      </div>
+
+      <button class="submit-btn" onclick="checkRoom2PromoStep1()">
+        문구 해독 제출
+      </button>
+
+      <div id="room2PromoStep1Feedback" class="feedback-box"></div>
+    </div>
+
+    <div class="panel room2-step3-image-panel">
+      <h2>홍보물 다시 보기</h2>
+      <img src="./image/star.png" class="room2-step3-image" alt="불을 끄고 별을 켜다 홍보물">
+    </div>
+  </div>
+</section>
+<section id="room2AdStep1" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2Intro')">← 이전으로</button>
+    <div>임무 2 / MISSION 1 / STEP 1</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>모자이크 광고 해독</h1>
+    <p class="sub">
+      흐릿하게 가려진 광고를 클릭해 단서를 복구하세요.<br>
+      위쪽과 아래쪽 이미지의 정체를 각각 선택해야 합니다.
+    </p>
+
+    <div class="room2-reveal-wrap">
+      <img src="./image/old.jpg" class="room2-ad-image" alt="광고">
+
+      <div
+        id="upperBlur"
+        class="blur-spot"
+        onclick="revealBlur(event, this)"
+      ></div>
+
+      <div
+        id="lowerBlur"
+        class="blur-spot"
+        onclick="revealBlur(event, this)"
+      ></div>
+    </div>
+
+    <div class="question-text">1. 위쪽 사진의 정체는?</div>
+    <div class="choice-list">
+      <label class="check-choice"><input type="radio" name="upperObject" value="A"><span>캠핑장비 실린 수레</span></label>
+      <label class="check-choice"><input type="radio" name="upperObject" value="B"><span>폐지가 실린 수레</span></label>
+      <label class="check-choice"><input type="radio" name="upperObject" value="C"><span>유모차</span></label>
+      <label class="check-choice"><input type="radio" name="upperObject" value="D"><span>쇼핑카트</span></label>
+      <label class="check-choice"><input type="radio" name="upperObject" value="E"><span>택배 운반 상자</span></label>
+    </div>
+
+    <div class="question-text" style="margin-top:18px;">2. 아래쪽 사진의 정체는?</div>
+    <div class="choice-list">
+      <label class="check-choice"><input type="radio" name="lowerObject" value="A"><span>바퀴달린 책가방</span></label>
+      <label class="check-choice"><input type="radio" name="lowerObject" value="B"><span>장바구니</span></label>
+      <label class="check-choice"><input type="radio" name="lowerObject" value="C"><span>운동 가방</span></label>
+      <label class="check-choice"><input type="radio" name="lowerObject" value="D"><span>사람 태운 썰매</span></label>
+      <label class="check-choice"><input type="radio" name="lowerObject" value="E"><span>여행용 캐리어</span></label>
+    </div>
+
+    <button class="submit-btn" onclick="checkRoom2AdStep1()">
+      이미지 정체 제출
+    </button>
+
+    <div id="room2AdStep1Feedback" class="feedback-box"></div>
+  </div>
+</section>
+
+<section id="room2AdImageMeaning" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2AdStep1')">← 이전으로</button>
+    <div>임무 2 / MISSION 1 / 이미지 의미 분석</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>광고 이미지 의미 분석</h1>
+    <p class="sub">
+      광고 이미지가 무엇을 대비하고 있는지 확인하고,<br>
+      각 이미지가 광고에서 어떤 의미로 쓰였는지 분석하세요.
+    </p>
+
+    <img src="./image/old.jpg" class="hint-photo" alt="국민연금 공익광고">
+
+    <div class="question-text">
+      1. 이 광고 이미지의 내용과 특징은?
+    </div>
+
+    <p class="sub" style="margin-bottom:14px;">
+      아래 초성을 참고하여 빈칸을 완성하세요.
+    </p>
+
+    <div class="short-answer-box">
+      <div class="answer-guide">
+        폐지와 신문을 실은 운반대의 손잡이와<br>
+        여행용 가방의 손잡이가 <strong>ㄷㅂ</strong>된다.
+      </div>
+
+      <input
+        type="text"
+        id="handleContrastInput"
+        class="answer-input"
+        placeholder="정답 입력"
+        autocomplete="off"
+      >
+    </div>
+    <button class="submit-btn" onclick="checkHandleContrastOnly()">
+      1번 정답 확인
+    </button>
+
+<div id="handleContrastFeedback" class="feedback-box"></div>
+    <div class="question-text" style="margin-top:22px;">
+      2. 위쪽 수레가 광고에서 의미하는 것으로 알맞은 것 2개를 선택하세요.
+    </div>
+
+    <div class="choice-list">
+      <label class="check-choice"><input type="checkbox" name="cartMeaning" value="A"><span>생계를 위해 계속 일해야 하는 노후</span></label>
+      <label class="check-choice"><input type="checkbox" name="cartMeaning" value="B"><span>즐겁고 여유로운 여행이 있는 노후</span></label>
+      <label class="check-choice"><input type="checkbox" name="cartMeaning" value="C"><span>경제적으로 불안정한 노후</span></label>
+      <label class="check-choice"><input type="checkbox" name="cartMeaning" value="D"><span>취미 생활을 즐기는 노후</span></label>
+      <label class="check-choice"><input type="checkbox" name="cartMeaning" value="E"><span>새로운 물건을 사러 가는 노후</span></label>
+    </div>
+
+    <div class="question-text" style="margin-top:22px;">
+      3. 아래쪽 캐리어가 광고에서 의미하는 것으로 알맞은 것 2개를 선택하세요.
+    </div>
+
+    <div class="choice-list">
+      <label class="check-choice"><input type="checkbox" name="carrierMeaning" value="A"><span>가난하고 불안정한 노후</span></label>
+      <label class="check-choice"><input type="checkbox" name="carrierMeaning" value="B"><span>여행과 휴식을 즐길 수 있는 노후</span></label>
+      <label class="check-choice"><input type="checkbox" name="carrierMeaning" value="C"><span>생계를 위해 무거운 짐을 나르는 노후</span></label>
+      <label class="check-choice"><input type="checkbox" name="carrierMeaning" value="D"><span>노후 준비가 전혀 필요 없다는 생각</span></label>
+      <label class="check-choice"><input type="checkbox" name="carrierMeaning" value="E"><span>여유롭고 안정적인 노후</span></label>
+    </div>
+
+    <button class="submit-btn" onclick="checkRoom2AdMeaning()">
+      이미지 의미 분석 제출
+    </button>
+
+    <div id="room2AdMeaningFeedback" class="feedback-box"></div>
+  </div>
+</section>
+
+<section id="room2AdStep2" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2AdImageMeaning')">← 이전으로</button>
+    <div>임무 2 / MISSION 1 / STEP 2</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>광고 문구 해독</h1>
+    <p class="sub">
+      광고의 핵심 표현과 그 의미를 카드 뒤집기 방식으로 연결하세요.
+    </p>
+
+    <img src="./image/old.jpg" class="hint-photo" alt="국민연금 공익광고">
+
+    <div class="question-text">
+      위 광고의 핵심 표현과 의미의 짝을 찾아라!
+    </div>
+
+    <p class="sub" style="margin-bottom:18px;">
+      카드를 눌러 뒤집고, 핵심 표현과 올바른 의미를 연결하세요.<br>
+      정답 짝은 형광색 테두리로 표시되고, 틀린 짝은 다시 뒤집힙니다.
+    </p>
+
+    <div class="memory-grid" id="memoryGrid">
+
+  <button class="memory-card" data-word="65세" data-match="노년/노후">
+    <span class="front">?</span><span class="back">65세</span>
+  </button>
+
+  <button class="memory-card" data-word="색깔">
+    <span class="front">?</span><span class="back">색깔</span>
+  </button>
+
+  <button class="memory-card" data-word="삶의 방향" data-match="손잡이">
+    <span class="front">?</span><span class="back">삶의 방향</span>
+  </button>
+
+  <button class="memory-card" data-word="광고주">
+    <span class="front">?</span><span class="back">광고주</span>
+  </button>
+
+  <button class="memory-card" data-word="바퀴">
+    <span class="front">?</span><span class="back">바퀴</span>
+  </button>
+
+  <button class="memory-card" data-word="잡으시렵니까" data-match="미래의 선택">
+    <span class="front">?</span><span class="back">잡으시렵니까</span>
+  </button>
+
+  <button class="memory-card" data-word="노년/노후" data-match="65세">
+    <span class="front">?</span><span class="back">노년/노후</span>
+  </button>
+
+  <button class="memory-card" data-word="글자 크기">
+    <span class="front">?</span><span class="back">글자 크기</span>
+  </button>
+
+  <button class="memory-card" data-word="손잡이" data-match="삶의 방향">
+    <span class="front">?</span><span class="back">손잡이</span>
+  </button>
+
+  <button class="memory-card" data-word="배경색">
+    <span class="front">?</span><span class="back">배경색</span>
+  </button>
+
+  <button class="memory-card" data-word="미래의 선택" data-match="잡으시렵니까">
+    <span class="front">?</span><span class="back">미래의 선택</span>
+  </button>
+
+  <button class="memory-card" data-word="로고">
+    <span class="front">?</span><span class="back">로고</span>
+  </button>
+
+</div>
+
+    <button class="submit-btn" onclick="checkMemoryMission()">
+      문구 해독 제출
+    </button>
+
+    <div id="memoryFeedback" class="feedback-box"></div>
+  </div>
+</section>
+
+<section id="room2AdStep3" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2AdStep2')">← 이전으로</button>
+    <div>임무 2 / MISSION 1 / STEP 3</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="room2-step3-layout">
+    <div class="panel room2-step3-question">
+      <h1>숨겨진 프레임 탐지</h1>
+      <p class="sub">
+        광고의 현실 재현 방식을 파악하세요. 
+      </p>
+
+      <div class="question-text">
+        이 광고의 의도로 가장 적절한 것은?
+      </div>
+
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="room2AdView" value="A"><span>여유로운 노후를 위해 국민연금에 가입해야 한다는 의도</span></label>
+        <label class="check-choice"><input type="radio" name="room2AdView" value="B"><span>폐지를 줍는 노인의 삶을 비하하기 위한 의도</span></label>
+        <label class="check-choice"><input type="radio" name="room2AdView" value="C"><span>나이가 들면 누구나 같은 삶을 살것이라는 것을 밝히는 의도</span></label>
+        <label class="check-choice"><input type="radio" name="room2AdView" value="D"><span>국민연금에 의해 폐지 줍는 삶도 여행갈 수 있다는 의도</span></label>
+      </div>
+
+      <div class="question-text">
+  이 광고에 반영된 고정관념으로 볼 수 있는 것을
+  <strong>2개</strong> 고르세요.
+</div>
+
+<div class="choice-list">
+
+  <label class="check-choice">
+    <input type="checkbox" name="room2Bias" value="1">
+    <span>모든 사람은 65세에 일을 그만둔다는 이미지</span>
+  </label>
+
+  <label class="check-choice">
+    <input type="checkbox" name="room2Bias" value="2">
+    <span>여행가방은 항상 좋은 물건이라는 이미지</span>
+  </label>
+
+  <label class="check-choice">
+    <input type="checkbox" name="room2Bias" value="3">
+    <span>폐지 줍는 일에 대한 부정적 이미지</span>
+  </label>
+
+  <label class="check-choice">
+    <input type="checkbox" name="room2Bias" value="4">
+    <span>준비되지 않은 노년은 빈곤해질 수 있다는 이미지</span>
+  </label>
+
+</div>
+
+      <button class="submit-btn" onclick="checkRoom2AdStep3()">최종 분석 제출</button>
+      <div id="room2AdStep3Feedback" class="feedback-box"></div>
+    </div>
+
+    <div class="panel room2-step3-image-panel">
+      <h2>광고 다시 보기</h2>
+      <img src="./image/old.jpg" class="room2-step3-image" alt="국민연금 공익광고">
+    </div>
+  </div>
+</section>
+<section id="room2Mission1Hint" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2AdStep3')">← 이전으로</button>
+    <div>임무 2 / MISSION 1 힌트</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>MISSION 1 보안 단서 획득</h1>
+
+    <p class="sub">
+      광고 분석을 완료했습니다.<br>
+      두 번째 임무 최종 계산식의 첫 번째 숫자를 기록하세요.
+    </p>
+
+    <div class="hint-box">
+      <h2>MISSION 1 힌트 숫자</h2>
+      <div style="font-size:70px; font-weight:900; color:#facc15; text-align:center;">
+        3
+      </div>
+    </div>
+
+    <button class="main-btn" onclick="showScreen('room2Mission2Intro')">
+      MISSION 2 홍보물 분석으로 이동
+    </button>
+  </div>
+</section>
+<section id="room2Mission2Intro" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2Mission1Hint')">← 이전으로</button>
+    <div>임무 2 / MISSION 2</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>홍보물 분석 작전</h1>
+    <p class="sub">
+      이제 홍보물에 담긴 이미지, 문구, 관점과 의도를 분석합니다.
+    </p>
+
+    <button class="main-btn" onclick="showScreen('room2PromoStep1')">
+      홍보물 문구 분석 시작
+    </button>
+  </div>
+</section>
+
+
+<section id="room2PromoStep2" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2PromoStep1')">← 이전으로</button>
+    <div>임무 2 / MISSION 2 / STEP 2</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="room2-step3-layout">
+    <div class="panel room2-step3-question">
+      <h1>홍보물 이미지 분석</h1>
+      <p class="sub">분석 내용을 먼저 누른 뒤, 홍보물 이미지에서 알맞은 요소를 클릭하세요.</p>
+
+      <button class="promo-analysis-card yellow" onclick="selectPromoQuestion(1)">
+        1. 전체적으로 어두운 이미지의 색과 달리 밝고 진하게 표현하여 강조한 것은?
+        <span class="answer-label" id="promoAnswer1">?</span>
+      </button>
+
+      <button class="promo-analysis-card green" onclick="selectPromoQuestion(2)">
+        2. 미래 세대를 위해 에너지를 아끼자는 의미를 표현한 것은?
+        <span class="answer-label" id="promoAnswer2">?</span>
+      </button>
+
+      <button class="promo-analysis-card blue" onclick="selectPromoQuestion(3)">
+        3. 전 세계가 함께 에너지 절약에 동참하자는 의미를 표현한 것은?
+        <span class="answer-label" id="promoAnswer3">?</span>
+      </button>
+
+      <button class="submit-btn" onclick="checkRoom2PromoStep2()">
+        이미지 분석 제출
+      </button>
+
+      <div id="room2PromoStep2Feedback" class="feedback-box"></div>
+    </div>
+
+    <div class="panel room2-step3-image-panel">
+      <h2>홍보물 이미지에서 클릭하세요</h2>
+
+      <div class="promo-hotspot-wrap">
+        <img src="./image/star.png" class="promo-hotspot-image" alt="홍보물">
+
+        <button class="promo-hotspot star-spot" onclick="matchPromoImage(1)"></button>
+        <button class="promo-hotspot child-spot" onclick="matchPromoImage(2)"></button>
+        <button class="promo-hotspot earth-spot" onclick="matchPromoImage(3)"></button>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="room2PromoStep3" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2PromoStep2')">← 이전으로</button>
+    <div>임무 2 / MISSION 2 / STEP 3</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="room2-step3-layout">
+    <div class="panel room2-step3-question">
+      <h1>홍보물 주제 복원</h1>
+
+      <div class="question-text">
+        <strong>제작자의 의도</strong><br>
+        에너지의 날을 알리고, 지구의 미래를 위해 에너지 사용을 줄일 것을 설득하고자 함.
+      </div>
+
+      <p class="sub">
+        아래 어절 카드를 끌어다 놓아 이 홍보물의 주제를 완성하세요.<br>
+        필요 없는 카드도 섞여 있습니다.
+      </p>
+      <div class="question-text">
+       힌트: 이 홍보물은 <strong>‘에너지의 날’</strong> 홍보를 위해 제작되었어요.
+      </div>
+
+    <div id="promoWordBank" class="promo-word-bank">
+      <button class="promo-word-card" draggable="true">환경을</button>
+      <button class="promo-word-card" draggable="true">앞으로</button>
+      <button class="promo-word-card" draggable="true">에너지의</button>
+      <button class="promo-word-card" draggable="true">지구의</button>
+      <button class="promo-word-card" draggable="true">맞이하여</button>
+      <button class="promo-word-card" draggable="true">분석하여</button>
+      <button class="promo-word-card" draggable="true">에너지</button>
+      <button class="promo-word-card" draggable="true">미래를</button>
+      <button class="promo-word-card" draggable="true">설득하고자</button>
+      <button class="promo-word-card" draggable="true">줄이고</button>
+    </div>
+
+      <div
+        id="promoDropZone"
+        class="promo-drop-zone promo-sentence-zone"
+        ondragover="event.preventDefault()"
+        ondrop="dropPromoWord(event)"
+      >
+        <span class="drop-slot" data-slot="0"></span>
+        <span class="fixed-word">날을</span>
+        <span class="drop-slot" data-slot="1"></span>
+        <span class="drop-slot" data-slot="2"></span>
+        <span class="fixed-word">사용을</span>
+        <span class="drop-slot" data-slot="3"></span>
+        <span class="drop-slot" data-slot="4"></span>
+        <span class="fixed-word">보호하자.</span>
+      </div>
+
+      <div class="promo-build-controls">
+        <button class="submit-btn" onclick="resetPromoSentence()">
+          다시 만들기
+        </button>
+
+        <button class="submit-btn" onclick="checkRoom2PromoStep3()">
+          주제 제출
+        </button>
+      </div>
+
+      <div id="room2PromoStep3Feedback" class="feedback-box"></div>
+    </div>
+
+    <div class="panel room2-step3-image-panel">
+      <h2>홍보물 다시 보기</h2>
+      <img src="./image/star.png" class="room2-step3-image" alt="불을 끄고 별을 켜다 홍보물">
+    </div>
+  </div>
+</section>
+
+<section id="room2Mission2Hint" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2PromoStep3')">← 이전으로</button>
+    <div>임무 2 / MISSION 2 힌트</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>MISSION 2 보안 단서 획득</h1>
+
+    <p class="sub">
+      아래 설명에 해당하는 단어를 떠올리고,<br>
+      그 단어의 <strong>글자 수</strong>를 기록하세요.
+    </p>
+
+    <div class="hint-box">
+      <h2>MISSION 2 힌트</h2>
+
+      <p style="font-size:24px; line-height:1.8;">
+        <strong>“변하지 않는 굳어진 생각이나 지나치게 일반화된 편견”</strong>
+        을 뜻하는 단어는?
+      </p>
+
+      <p style="font-size:20px; color:#cbd5e1;">
+        힌트: 교과서 168쪽 확인
+      </p>
+
+      <p style="font-size:22px; margin-top:24px;">
+        그 단어의 글자 수가 두 번째 숫자입니다.
+      </p>
+    </div>
+
+    <button class="main-btn" onclick="showScreen('room2Mission3Intro')">
+       MISSION 3 신문기사 B 분석으로 이동
+    </button>
+  </div>
+</section>
+<section id="room2Mission3Intro" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2Mission2Hint')">← 이전으로</button>
+    <div>임무 2 / MISSION 3</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>신문기사 B 분석 작전</h1>
+
+    <p class="sub">
+      이번에는 생성형 AI 확산에 대한 기대와 불안을 함께 다룬 신문기사를 분석합니다.<br>
+      표제, 그래프, 본문을 살펴보며 기사의 관점과 의도를 파악하세요.
+    </p>
+
+    <img src="./image/AI_news2.png" class="hint-photo" alt="신문기사 B">
+
+    <button class="main-btn" onclick="showScreen('room2NewsStep1')">
+      신문기사 B 분석 시작
+    </button>
+  </div>
+</section>
+
+
+<section id="room2NewsStep1" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2Mission3Intro')">← 이전으로</button>
+    <div>임무 2 / MISSION 3 / STEP 1</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="room-layout">
+    <div class="sns-panel">
+      <h2 class="mission-label">신문기사 B 데이터 복구</h2>
+      <h1>표제와 그래프 해독</h1>
+      <p class="mission-desc">표제에서 AI 확산에 대한 두 감정을 찾고, 그래프가 의미하는 내용을 판단하세요.</p>
+      <div class="news2-fixed-wrap">
+        <img src="./image/AI_news2.png" class="news2-fixed-image" alt="신문기사 B">
+        <button class="news2-hotspot expect-title" onclick="collectRoom2NewsTitleKeyword(this, '기대')"></button>
+        <button class="news2-hotspot anxiety-title" onclick="collectRoom2NewsTitleKeyword(this, '불안')"></button>
+      </div>
+    </div>
+
+    <div class="question-panel">
+      <h2>STEP 1 분석 질문</h2>
+      <p class="question-text">1. 표제에서 AI에 대해 나타나는 감정 두 가지를 직접 클릭하세요.</p>
+      <div id="room2NewsTitleList" class="news2-clue-list"></div>
+
+      <div class="question-text">2. 그래프가 보여 주는 내용으로 가장 알맞은 것은?</div>
+<div class="choice-list single-choice-list">
+  <label class="check-choice">
+    <input type="radio" name="news2GraphMeaning" value="A">
+    <span>AI에 대한 기대가 커졌기 때문에 일자리 걱정은 거의 사라졌다.</span>
+  </label>
+  <label class="check-choice">
+    <input type="radio" name="news2GraphMeaning" value="B">
+    <span>AI가 편리함을 주는 기술이지만, 일자리 변화에 대한 걱정도 함께 나타난다.</span>
+  </label>
+  <label class="check-choice">
+    <input type="radio" name="news2GraphMeaning" value="C">
+    <span>사람들은 AI가 생활을 바꿀 수 있다고 보면서도, 일자리 위협을 크게 걱정하고 있다.</span>
+  </label>
+  <label class="check-choice">
+    <input type="radio" name="news2GraphMeaning" value="D">
+    <span>AI가 일자리에 영향을 준다고 생각하는 사람은 일부에 불과하다.</span>
+  </label>
+</div>
+
+<div class="question-text">3. 표제와 그래프를 함께 보았을 때, 이 기사에서 중심적으로 다루려는 내용은?</div>
+<div class="choice-list single-choice-list">
+  <label class="check-choice">
+    <input type="radio" name="news2CoreView" value="A">
+    <span>AI가 사회에 가져올 긍정적 변화와 일자리 위협에 대한 우려를 함께 살펴보려는 것이다.</span>
+  </label>
+  <label class="check-choice">
+    <input type="radio" name="news2CoreView" value="B">
+    <span>AI가 사람들의 일자리를 모두 빼앗을 것이라고 단정하려는 것이다.</span>
+  </label>
+  <label class="check-choice">
+    <input type="radio" name="news2CoreView" value="C">
+    <span>AI 기술의 발전보다 그래프 수치 자체가 더 중요하다고 말하려는 것이다.</span>
+  </label>
+  <label class="check-choice">
+    <input type="radio" name="news2CoreView" value="D">
+    <span>AI 사용을 줄이고 예전 방식으로 돌아가야 한다고 주장하려는 것이다.</span>
+  </label>
+</div>
+      <button class="submit-btn" onclick="checkRoom2NewsStep1()">STEP 1 제출</button>
+      <div id="room2NewsStep1Feedback" class="feedback-box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="room2NewsStep2" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2NewsStep1')">← 이전으로</button>
+    <div>임무 2 / MISSION 3 / STEP 2</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="room-layout">
+    <div class="sns-panel">
+      <h2 class="mission-label">STEP 2</h2>
+      <h1>핵심 문장 추적</h1>
+      <p class="mission-desc">본문에서 이 기사의 핵심 문장 1개를 찾아 클릭하세요.</p>
+      <div class="news2-fixed-wrap">
+        <img src="./image/AI_news2.png" class="news2-fixed-image" alt="신문기사 B">
+        <button 
+          class="news2-hotspot core-body" 
+          onclick="collectRoom2NewsCoreSentence(this)"
+          aria-label="기사의 핵심 문장"
+        ></button>
+      </div>
+    </div>
+
+    <div class="question-panel">
+      <h2>다음 단계</h2>
+      <div class="news2-next-box">
+        두 가지 입장을 다 고려하는 기사의 관점이 담긴 핵심 문장을 찾으세요.<br><br>
+        핵심 문장을 클릭하면 다음 단계 버튼이 나타납니다.
+      </div>
+
+      <button
+        id="room2NewsStep2NextBtn"
+        class="main-btn"
+        style="display:none;"
+        onclick="showScreen('room2NewsStep3')"
+      >
+        STEP 3 관점과 의도 분석으로 이동
+      </button>
+
+      <div id="room2NewsStep2Feedback" class="feedback-box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="room2NewsStep3" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2NewsStep2')">← 이전으로</button>
+    <div>임무 2 / MISSION 3 / STEP 3</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="room2-step3-layout">
+    <div class="panel room2-step3-question">
+      <h1>기사의 관점과 의도 분석</h1>
+
+      <p class="question-text">1. 이 기사의 관점으로 가장 알맞은 것은?</p>
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="room2NewsView" value="A"><span>AI 발전에 대한 기대와 불안을 함께 보여 준다.</span></label>
+        <label class="check-choice"><input type="radio" name="room2NewsView" value="B"><span>AI 발전을 무조건 반대한다.</span></label>
+        <label class="check-choice"><input type="radio" name="room2NewsView" value="C"><span>AI 발전은 아무 문제가 없다고만 말한다.</span></label>
+        <label class="check-choice"><input type="radio" name="room2NewsView" value="D"><span>AI와 일자리는 관련이 없다고 말한다.</span></label>
+      </div>
+
+      <p class="question-text" style="margin-top:16px;">2. 이 기사의 의도로 가장 알맞은 것은?</p>
+      <div class="choice-list single-choice-list">
+        <label class="check-choice"><input type="radio" name="room2NewsIntent" value="A"><span>AI 사용을 모두 금지하자고 설득하려는 것이다.</span></label>
+        <label class="check-choice"><input type="radio" name="room2NewsIntent" value="B"><span>그래프를 꾸미기 위해 만든 기사이다.</span></label>
+        <label class="check-choice"><input type="radio" name="room2NewsIntent" value="C"><span>AI 기술의 장점과 우려를 함께 알리고, 바르게 사용할 방법을 생각하게 하려는 것이다.</span></label>
+        <label class="check-choice"><input type="radio" name="room2NewsIntent" value="D"><span>AI를 사용하는 사람을 비난하려는 것이다.</span></label>
+      </div>
+
+      <p class="question-text" style="margin-top:16px;">3. 아래 카드를 눌러 기사의 주제를 완성하세요.</p>
+      <div id="room2NewsSubjectBank" class="news2-subject-bank">
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '위험을')">위험을</button>
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '금지하자.')">금지하자.</button>
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '생성형 AI의')">생성형 AI의</button>
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '함께')">함께</button>
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '장점과')">장점과</button>
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '광고하자.')">광고하자.</button>
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '생각하자.')">생각하자.</button>
+        <button class="news2-word-card" onclick="addRoom2NewsSubjectWord(this, '긍정만')">긍정만</button>
+      </div>
+      <div id="room2NewsSubjectZone" class="news2-subject-zone">여기에 주제 문장을 순서대로 만드세요.</div>
+
+      <div class="promo-build-controls">
+        <button class="submit-btn" onclick="resetRoom2NewsSubject()">다시 만들기</button>
+        <button class="submit-btn" onclick="checkRoom2NewsStep3()">최종 분석 제출</button>
+      </div>
+      <div id="room2NewsStep3Feedback" class="feedback-box"></div>
+    </div>
+
+    <div class="panel room2-step3-image-panel">
+      <h2>기사 다시 보기</h2>
+      <img src="./image/AI_news2.png" class="room2-step3-image" alt="신문기사 B">
+    </div>
+  </div>
+</section>
+
+<section id="room2Mission3Hint" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2NewsStep3')">← 이전으로</button>
+    <div>임무 2 / MISSION 3 힌트</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>MISSION 3 보안 단서 획득</h1>
+    <p class="sub">신문기사 B 분석을 완료했습니다.<br>두 번째 임무 최종 계산식의 세 번째 숫자를 기록하세요.</p>
+    <div class="hint-box">
+      <h2>MISSION 3 힌트 숫자</h2>
+      <p style="font-size:22px; line-height:1.8;">AI에 대한 <strong>기대</strong>와 <strong>불안</strong>을 함께 살펴보았습니다.<br>균형 잡힌 분석을 완성한 요원이 얻는 숫자입니다.</p>
+      <div style="font-size:70px; font-weight:900; color:#facc15; text-align:center;">6</div>
+    </div>
+    <button class="main-btn" onclick="showScreen('room2FinalPasswordCalc')">
+  비밀번호는?
+</button>
+    <button class="main-btn" onclick="showScreen('roomSelect')">임무 선택 화면으로 돌아가기</button>
+  </div>
+</section>
+<section id="room2FinalPasswordCalc" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room2Mission3Hint')">← 이전으로</button>
+    <div>임무 2 / 최종 비밀번호 계산</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>최종 비밀번호 계산</h1>
+
+    <p class="sub">
+      세 개의 미션에서 얻은 힌트 숫자를 조합하여<br>
+      최종 비밀번호를 계산하세요.
+    </p>
+
+    <div class="calc-row">
+      <div class="calc-card">
+        <strong>첫 번째 힌트</strong>
+        <select id="room2Num1">
+          <option value="">□</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          <option>6</option><option>7</option><option>8</option><option>9</option>
+        </select>
+      </div>
+
+      <div class="calc-symbol">+</div>
+
+      <div class="calc-card">
+        <strong>두 번째 힌트</strong>
+        <select id="room2Num2">
+          <option value="">□</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          <option>6</option><option>7</option><option>8</option><option>9</option>
+        </select>
+      </div>
+
+      <div class="calc-symbol">×</div>
+
+      <div class="calc-card">
+        <strong>세 번째 힌트</strong>
+        <select id="room2Num3">
+          <option value="">□</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          <option>6</option><option>7</option><option>8</option><option>9</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="sub" style="font-size:26px; font-weight:900;">
+      ( □ + □ ) × □ = 최종 비밀번호
+    </p>
+
+    <button class="main-btn" onclick="checkRoom2FinalPassword()">
+      비밀번호 확인
+    </button>
+
+    <div id="room2FinalPasswordFeedback" class="feedback-box"></div>
+  </div>
+</section>
+
+<!-- 임무 3 - MISSION 1 : 공익광고 영상 분석 -->
+<section id="room3Mission1" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('roomSelect')">← 이전으로</button>
+    <div>임무 3 / MISSION 1</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>공익광고 영상 분석</h1>
+    <p class="sub">영상을 보고 문구, 장면 변화, 광고의 의도를 분석하세요.</p>
+
+    <video class="mission-video" controls>
+      <source src="./video/public_ad_first_step.mp4" type="video/mp4">
+      이 브라우저에서는 영상을 재생할 수 없습니다.
+    </video>
+
+    <!-- STEP 1 -->
+    <div class="mission-step-box">
+      <div class="question-text">STEP 1. 영상에서 반복되는 핵심 문구를 쓰세요.</div>
+      <input id="room3Step1Answer" class="answer-input" placeholder="정답 입력">
+      <button class="submit-btn" onclick="checkRoom3Step1()">STEP 1 제출</button>
+      <div id="room3Step1Feedback" class="feedback-box"></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="room3Step2Box" class="mission-step-box hidden">
+      <div class="question-text">STEP 2. 처음의 모습과 이후의 모습을 바르게 연결하세요.</div>
+
+      <div class="matching-wrap">
+        <div class="match-column">
+          <button class="match-card left" data-id="1" onclick="selectMatchLeft(this)">
+            엘리베이터 안에서 스마트폰만 하는 학생에게 이웃이 먼저 인사를 건넴
+          </button>
+          <button class="match-card left" data-id="2" onclick="selectMatchLeft(this)">
+            키오스크 앞에서 힘들어 하는 할머니에게 먼저 다가가 사용 방법을 알려줌
+          </button>
+          <button class="match-card left" data-id="3" onclick="selectMatchLeft(this)">
+            택배를 전달해주는 배달원에게 감사의 인사를 전함
+          </button>
+        </div>
+
+        <svg id="matchSvg" class="match-svg"></svg>
+
+        <div class="match-column">
+          <button class="match-card right" data-id="3" onclick="selectMatchRight(this)">
+            배달원이 경비원에게 감사의 인사를 전함
+          </button>
+          <button class="match-card right" data-id="1" onclick="selectMatchRight(this)">
+            학생이 이웃에게 밝게 웃으며 인사를 함
+          </button>
+          <button class="match-card right" data-id="2" onclick="selectMatchRight(this)">
+            할머니가 도움을 준 사람에게 고맙다 인사하며 함께 웃음
+          </button>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="checkRoom3Step2()">STEP 2 제출</button>
+      <button class="submit-btn" onclick="resetRoom3Matching()">다시 연결하기</button>
+      <div id="room3Step2Feedback" class="feedback-box"></div>
+    </div>
+
+      <!-- STEP 3 -->
+     <div id="room3Step3Box" class="mission-step-box hidden">
+
+     <div class="question-text">
+        STEP 3. 이 공익광고에 반영된 제작자의 의도와 관점으로 가장 알맞은 것은?
+     </div>
+
+     <div class="choice-list single-choice-list">
+
+     <label class="check-choice">
+       <input type="radio" name="room3Intent" value="A">
+       <span>
+         사람들 사이의 따뜻한 행동이 이어져 서로가 서로에게 마음을 전하는 사회를 만들자고 권유하기 위해
+       </span>
+     </label>
+
+     <label class="check-choice">
+       <input type="radio" name="room3Intent" value="B">
+       <span>
+        키오스크나 스마트폰 사용이 사람 사이의 관계를 완전히 단절시키고 있다고 비판하기 위해
+       </span>
+     </label>
+
+     <label class="check-choice">
+       <input type="radio" name="room3Intent" value="C">
+       <span>
+        학생과 배달원, 노인 세대가 서로 다른 생활 방식을 가지고 있음을 비교하여 보여주기 위해
+       </span>
+     </label>
+
+     <label class="check-choice">
+       <input type="radio" name="room3Intent" value="D">
+       <span>
+        일상생활 속 예절과 규칙을 정확히 지켜야만 사회 질서가 유지될 수 있다고 강조하기 위해
+       </span>
+     </label>
+     </div>
+
+ 
+
+  <button class="submit-btn" onclick="checkRoom3Step3()">STEP 3 제출</button>
+  <div id="room3Step3Feedback" class="feedback-box"></div>
+
+</div>
+
+    </div>
+  </div>
+</section>
+
+<section id="room3Mission1Hint" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room3Mission1')">← 이전으로</button>
+    <div>임무 3 / MISSION 1 힌트</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>MISSION 1 보안 단서 획득</h1>
+    <div class="hint-box">
+      <h2>MISSION 1 힌트 숫자</h2>
+      <p style="font-size:54px; font-weight:900; text-align:center; color:#facc15;">6</p>
+    </div>
+
+    <button class="main-btn" onclick="showScreen('room3Mission2')">
+      MISSION 2 영상 분석으로 이동
+    </button>
+  </div>
+</section>
+
+
+<!-- 임무 3 - MISSION 2 -->
+<section id="room3Mission2" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room3Mission1Hint')">← 이전으로</button>
+    <div>임무 3 / MISSION 2</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>공익광고 영상 분석 2</h1>
+    <p class="sub">영상을 보고 문구, 장면, 사회·문화적 상황, 배제된 내용을 차례대로 분석하세요.</p>
+
+    <video class="mission-video" controls>
+      <source src="./video/migrant_youth_ad.mp4" type="video/mp4">
+      이 브라우저에서는 영상을 재생할 수 없습니다.
+    </video>
+
+    <!-- STEP 1: 1-1, 1-2 -->
+    <div class="mission-step-box">
+      <div class="question-text">
+        STEP 1-1. 이 영상에 등장하는 청소년들은 어떤 공통점을 가지고 있나요?
+      </div>
+      <input id="room3Mission2Q1" class="answer-input" placeholder="정답 입력">
+
+      <hr class="mission-divider">
+
+      <div class="question-text">
+        STEP 1-2. 영상에서 반복적으로 강조되는 핵심 문구를 쓰세요.
+      </div>
+      <input id="room3Mission2Q2" class="answer-input" placeholder="정답 입력">
+
+      <button class="submit-btn" onclick="checkRoom3Mission2Step1()">STEP 1 제출</button>
+      <div id="room3Mission2Step1Feedback" class="feedback-box"></div>
+    </div>
+
+    <!-- STEP 2: 1-3 -->
+    <div id="room3Mission2Step2Box" class="mission-step-box hidden">
+      <div class="question-text">
+        STEP 2. 광고에서 활용한 장면의 내용으로 가장 알맞은 것은?
+      </div>
+
+      <div class="choice-list single-choice-list">
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Scene" value="A">
+          <span>학생들이 서로 경쟁하며 각자의 성과를 비교하는 장면</span>
+        </label>
+
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Scene" value="B">
+          <span>출신은 다르지만 친구들과 자연스럽게 어울려 지내는 장면</span>
+        </label>
+
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Scene" value="C">
+          <span>한국 문화에 적응하지 못한 학생들이 혼자 남겨지는 장면</span>
+        </label>
+
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Scene" value="D">
+          <span>서로 다른 언어를 사용하는 학생들이 갈등을 겪는 장면</span>
+        </label>
+      </div>
+
+      <button class="submit-btn" onclick="checkRoom3Mission2Step2()">STEP 2 제출</button>
+      <div id="room3Mission2Step2Feedback" class="feedback-box"></div>
+    </div>
+
+    <!-- STEP 3: 1-4 -->
+    <div id="room3Mission2Step3Box" class="mission-step-box hidden">
+      <div class="question-text">
+        STEP 3. 이 광고에 반영된 사회·문화적 상황으로 가장 알맞은 것은?
+      </div>
+
+      <div class="choice-list single-choice-list">
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Society" value="A">
+          <span>청소년들이 대부분 같은 문화 속에서만 생활하게 됨</span>
+        </label>
+
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Society" value="B">
+          <span>학교에서 외국어 사용이 점점 금지되고 있는 상황</span>
+        </label>
+
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Society" value="C">
+          <span>학생들 사이의 경쟁이 심해지며 교류가 줄어드는 상황</span>
+        </label>
+
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Society" value="D">
+          <span>다양한 국가의 학생보다 같은 지역 출신 학생이 늘어나는 상황</span>
+        </label>
+
+        <label class="check-choice">
+          <input type="radio" name="room3Mission2Society" value="E">
+          <span>학교에서 이주 배경 학생들과 함께 생활하는 경우가 많아지는 상황</span>
+        </label>
+      </div>
+
+      <button class="submit-btn" onclick="checkRoom3Mission2Step3()">STEP 3 제출</button>
+      <div id="room3Mission2Step3Feedback" class="feedback-box"></div>
+    </div>
+
+    <!-- STEP 4: 1-5 -->
+    <div id="room3Mission2Step4Box" class="mission-step-box hidden">
+      <div class="question-text">
+        STEP 4. 이 광고가 배제하고 있는 내용과 관련된 문구 카드 2개를 고르세요.
+      </div>
+      <p class="sub-mini">※ 두 개를 선택해야 합니다.</p>
+
+      <div class="multi-card-wrap">
+
+  <button class="multi-card"
+          data-value="1"
+          onclick="toggleRoom3Mission2Card(this)">
+    학교 문화에 적응하지 못한 우리나라 학생들
+  </button>
+
+  <button class="multi-card"
+          data-value="2"
+          onclick="toggleRoom3Mission2Card(this)">
+    다양한 문화가 함께 어우러져 지낼 수 있음
+  </button>
+
+  <button class="multi-card"
+          data-value="3"
+          onclick="toggleRoom3Mission2Card(this)">
+    학생들은 모두 같은 생활방식을 가져야 함
+  </button>
+
+  <button class="multi-card"
+          data-value="4"
+          onclick="toggleRoom3Mission2Card(this)">
+    서로 다른 친구들과 자연스럽게 어울림
+  </button>
+
+  <button class="multi-card"
+          data-value="5"
+          onclick="toggleRoom3Mission2Card(this)">
+    한국 문화에 적응하지 못한 이주 배경 학생들
+  </button>
+
+  <button class="multi-card"
+          data-value="6"
+          onclick="toggleRoom3Mission2Card(this)">
+    친구들과 함께 학교생활을 하는 모습
+  </button>
+
+</div>
+
+      <button class="submit-btn" onclick="checkRoom3Mission2Step4()">STEP 4 제출</button>
+      <div id="room3Mission2Step4Feedback" class="feedback-box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="room3Mission2Hint" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room3Mission2')">← 이전으로</button>
+    <div>임무 3 / MISSION 2 힌트</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>MISSION 2 보안 단서 획득</h1>
+    <p class="sub">
+      영상 공익광고 분석을 완료했습니다.<br>
+      세 번째 임무 최종 비밀번호 계산에 사용할 두 번째 숫자입니다.
+    </p>
+
+    <div class="hint-box">
+      <h2>MISSION 2 힌트 숫자</h2>
+      <p style="font-size:72px; font-weight:900; text-align:center; color:#facc15;">
+        7
+      </p>
+    </div>
+
+    <button class="main-btn" onclick="showScreen('room3FinalPassword')">
+      최종 계산 화면으로 이동
+    </button>
+  </div>
+</section>
+
+<section id="room3FinalPassword" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('room3Mission2Hint')">← 이전으로</button>
+    <div>임무 3 / 최종 비밀번호 계산</div>
+    <div class="timer">17:00</div>
+  </div>
+
+  <div class="panel">
+    <h1>최종 비밀번호 계산</h1>
+    <p class="sub">
+      MISSION 1과 MISSION 2에서 얻은 힌트 숫자를 순서대로 넣어<br>
+      임무 3의 최종 비밀번호를 완성하세요.
+    </p>
+
+    <div class="calc-row">
+      <div class="calc-card">
+        <strong>MISSION 1 힌트 숫자</strong>
+        <select id="room3Num1">
+          <option value="">□</option>
+          <option>1</option><option>2</option><option>3</option>
+          <option>4</option><option>5</option><option>6</option>
+          <option>7</option><option>8</option><option>9</option>
+        </select>
+      </div>
+
+      <div class="calc-symbol">→</div>
+
+      <div class="calc-card">
+        <strong>MISSION 2 힌트 숫자</strong>
+        <select id="room3Num2">
+          <option value="">□</option>
+          <option>1</option><option>2</option><option>3</option>
+          <option>4</option><option>5</option><option>6</option>
+          <option>7</option><option>8</option><option>9</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="sub" style="font-size:24px;">
+      비밀번호 형식: <strong>□ □</strong>
+    </p>
+
+    <button class="main-btn" onclick="checkRoom3FinalPassword()">
+      최종 비밀번호 확인
+    </button>
+
+    <div id="room3FinalPasswordFeedback" class="feedback-box"></div>
+  </div>
+</section>
+
+
+  <!-- 마지막 팀 미션 QR 화면 -->
+  <section id="finalTeamMissionRoom" class="screen">
+    <div class="topbar">
+      <button class="back-btn" onclick="showScreen('roomSelect')">← 임무 선택으로</button>
+      <div>FINAL 팀 미션</div>
+      <div class="timer">17:00</div>
+    </div>
+
+    <div class="panel">
+      <h1>마지막 팀 미션</h1>
+      <p class="sub">QR 코드를 스캔해 패들렛으로 이동하세요.<br>패들렛에서 요구하는 비밀번호는 선생님이 안내한 방식대로 입력하면 됩니다.</p>
+
+      <div style="text-align:center; margin-top:24px;">
+        <img src="./image/F_qr_code.png" class="hint-photo" alt="패들렛 QR 코드">
+      </div>
+
+      <button class="main-btn" onclick="showScreen('roomSelect')">임무 선택 화면으로 돌아가기</button>
+    </div>
+  </section>
+
+<script>
+    let selectedTeam = null;
+    let passwordType = null;
+    let timerInterval = null;
+    let timeLeft = 17 * 60;
+    let timerStarted = false;
+
+    let foundClues = [];
+    let articleKeywords = [];
+    let selectedFlowers = [];
+    let girlAdImages = [];
+    let boyAdImages = [];
+
+    function showScreen(id) {
+      const noTimerScreens = ["intro", "roomSelect"];
+      if (!noTimerScreens.includes(id) && !timerStarted) {
+        startTimer();
+        timerStarted = true;
+      }
+
+      document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("active"));
+      const target = document.getElementById(id);
+      if (target) {
+        target.classList.add("active");
+      } else {
+        alert("화면 ID를 찾을 수 없습니다: " + id);
+      }
+    }
+
+    function goTeamSelect() { showScreen("roomSelect"); }
+
+    function selectTeam(teamNumber) {
+      selectedTeam = teamNumber;
+      if ([1, 4, 7, 10].includes(teamNumber)) passwordType = "A";
+      else if ([2, 5, 8].includes(teamNumber)) passwordType = "B";
+      else passwordType = "C";
+      document.getElementById("teamTitle").innerText = selectedTeam + "팀: 담당 임무를 선택하세요";
+      showScreen("roomSelect");
+    }
+
+    function openRoom1Mission1() {
+      if (!timerStarted) {
+        startTimer();
+        timerStarted = true;
+      }
+      showScreen("room1Mission1");
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 17 * 60;
+      updateTimer();
+      timerInterval = setInterval(function() {
+        timeLeft--;
+        updateTimer();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          alert("시간이 종료되었습니다. 처음부터 다시 시작하세요.");
+          location.reload();
+        }
+      }, 1000);
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      const timeText = String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+      document.querySelectorAll(".timer").forEach(timerBox => timerBox.innerText = timeText);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerStarted = false;
+    }
+
+    function getCheckedValues(selectorOrName) {
+      let selector = selectorOrName;
+
+      // 기존 코드처럼 CSS 선택자를 넣어도 되고,
+      // 새 코드처럼 name 값만 넣어도 작동하도록 통합했습니다.
+      if (
+        !selectorOrName.startsWith("#") &&
+        !selectorOrName.startsWith(".") &&
+        !selectorOrName.startsWith("input") &&
+        !selectorOrName.includes("[")
+      ) {
+        selector = 'input[name="' + selectorOrName + '"]';
+      }
+
+      return Array.from(document.querySelectorAll(selector + ":checked"))
+        .map(input => input.value)
+        .sort();
+    }
+
+    function getCheckedNameValues(name) {
+      return getCheckedValues(name);
+    }
+
+    function sameArray(a, b) {
+      return JSON.stringify([...a].sort()) === JSON.stringify([...b].sort());
+    }
+
+    function checkRoom1Mission1() {
+      const checkedAnswers = getCheckedValues('#room1Mission1 input[type="checkbox"]');
+      const feedback = document.getElementById("room1Mission1Feedback");
+      feedback.className = "feedback-box";
+      if (sameArray(checkedAnswers, ["1", "7"])) {
+        feedback.classList.add("success");
+        feedback.innerHTML = "<strong>분석 성공!</strong><br><br>첫 번째 SNS 분석을 완료했습니다.<br>다음 SNS 분석 화면으로 이동합니다.";
+        setTimeout(() => showScreen("sns2IntroPage"), 1000);
+      } else {
+        feedback.classList.add("fail");
+        feedback.innerHTML = "<strong>분석 실패</strong><br><br>게시물에 직접 드러난 정보와 추측을 구분하세요.";
+      }
+    }
+
+    function checkRoom1Mission2Step1Situation() {
+      const checkedAnswers = getCheckedValues('#room1Mission2Step1 input[type="checkbox"]');
+      const feedback = document.getElementById("step1SituationFeedback");
+      feedback.className = "feedback-box";
+      if (sameArray(checkedAnswers, ["B", "E"])) {
+        feedback.classList.add("success");
+        feedback.innerHTML = "<strong>분석 성공!</strong><br><br>작성자의 상황을 잘 파악했습니다.<br>이제 그렇게 생각하게 만든 사진 속 단서를 찾아봅시다.";
+        setTimeout(function() {
+          foundClues = [];
+          document.getElementById("clueList").innerHTML = "";
+          document.querySelectorAll("#room1Mission2Step2 .hotspot").forEach(btn => btn.classList.remove("found"));
+          showScreen("room1Mission2Step2");
+        }, 1000);
+      } else {
+        feedback.classList.add("fail");
+        feedback.innerHTML = "<strong>분석 실패</strong><br><br>사진 속 아이, 장난감, 책장, 바닥 상태를 함께 살펴보세요.";
+      }
+    }
+
+    function collectClue(buttonElement, clueText) {
+      if (foundClues.includes(clueText)) return;
+      foundClues.push(clueText);
+      buttonElement.classList.add("found");
+      const li = document.createElement("li");
+      li.textContent = "단서 " + foundClues.length + "/7. " + clueText;
+      document.getElementById("clueList").appendChild(li);
+      if (foundClues.length === 7) {
+        const feedback = document.getElementById("clueFeedback");
+        feedback.className = "feedback-box success";
+        feedback.innerHTML = "<strong>핵심 단서 7개 수집 완료!</strong><br><br>이제 SNS 게시물의 의도를 분석합니다.";
+        setTimeout(() => showScreen("room1Mission2Step3"), 1000);
+      }
+    }
+
+    function checkRoom1Mission2Step3() {
+      const selected = document.querySelector('input[name="step3Intent"]:checked');
+      const feedback = document.getElementById("step3Feedback");
+      feedback.className = "feedback-box";
+      if (selected && selected.value === "B") {
+        feedback.classList.add("success");
+        feedback.innerHTML = "<strong>의도 분석 성공!</strong><br><br>MISSION 1 힌트 화면으로 이동합니다.";
+        setTimeout(() => showScreen("room1HintPage"), 1000);
+      } else {
+        feedback.classList.add("fail");
+        feedback.innerHTML = "사진 속 상황과 게시 의도를 다시 연결해 보세요.";
+      }
+    }
+
+    const introMessagePlain = `[긴급 지령 수신]
+
+도시 정보망에 원인 불명의 오염이 발생했습니다.
+
+사람들은 같은 사건을 보고도 서로 다른 현실을 믿기 시작했습니다.
+
+누군가가 현실을 선택하고, 불리한 장면은 배제하며,
+특정 관점이 진실처럼 보이도록 정보를 재구성하고 있습니다.
+
+정보 오염을 정화할 수 있는 방법은 단 하나.
+
+매체 속에 숨겨진 관점, 선택된 표현, 배제된 정보,
+그리고 제작자의 의도를 밝혀내는 것입니다.
+
+지금부터 여러분은 미디어 정화 작전에 투입됩니다.
+
+제한 시간은 17분.
+
+미디어 정화 작전,
+지금 시작합니다.`;
+
+    function highlightTypedText(text) {
+      return text
+        .replaceAll("선택", '<span class="highlight-yellow">선택</span>')
+        .replaceAll("배제", '<span class="highlight-yellow">배제</span>')
+        .replaceAll("재구성", '<span class="highlight-yellow">재구성</span>')
+        .replaceAll("제한 시간은 17분", '<span class="highlight-red">제한 시간은 17분</span>');
+    }
+
+    function startTypingIntro() {
+      const target = document.getElementById("typingText");
+      const guide = document.getElementById("missionGuide");
+      if (!target || !guide) return;
+      let index = 0;
+      target.innerHTML = "";
+      guide.classList.add("hidden");
+      const typing = setInterval(function() {
+        const currentText = introMessagePlain.slice(0, index);
+        target.innerHTML = highlightTypedText(currentText);
+        index++;
+        if (index > introMessagePlain.length) {
+          clearInterval(typing);
+          guide.classList.remove("hidden");
+        }
+      }, 25);
+    }
+
+    function collectArticleKeyword(button, keyword) {
+      if (articleKeywords.includes(keyword)) return;
+      articleKeywords.push(keyword);
+      button.classList.add("found");
+      const li = document.createElement("li");
+      li.textContent = keyword;
+      document.getElementById("articleKeywordList").appendChild(li);
+    }
+
+    function checkArticleStep1() {
+      const selected = document.querySelector('input[name="articleViewStep1"]:checked');
+      const feedback = document.getElementById("articleStep1Feedback");
+      feedback.className = "feedback-box";
+      const hasKeywords = articleKeywords.includes("실행력") && articleKeywords.includes("신뢰");
+      if (hasKeywords && selected && selected.value === "positive") {
+        feedback.classList.add("success");
+        feedback.innerHTML = "<strong>분석 성공!</strong><br><br>기사 이미지 인상 분석으로 이동합니다.";
+        setTimeout(() => showScreen("articleStep2"), 1000);
+      } else {
+        feedback.classList.add("fail");
+        feedback.innerHTML = "핵심 단어 2개를 모두 찾고, 기사 관점을 다시 판단하세요.";
+      }
+    }
+
+    function toggleFlower(button, word) {
+      if (selectedFlowers.includes(word)) {
+        selectedFlowers = selectedFlowers.filter(item => item !== word);
+        button.classList.remove("selected");
+      } else {
+        if (selectedFlowers.length >= 3) {
+          alert("3개까지만 선택할 수 있습니다.");
+          return;
+        }
+        selectedFlowers.push(word);
+        button.classList.add("selected");
+      }
+    }
+
+    function checkArticleStep2Flowers() {
+      const feedback = document.getElementById("flowerFeedback");
+      feedback.className = "feedback-box";
+      if (sameArray(selectedFlowers, ["미래적이다", "발전적이다", "신뢰할 수 있다"])) {
+        feedback.classList.add("success");
+        feedback.innerHTML = "<strong>이미지 인상 분석 성공!</strong><br><br>아래 질문에 답하세요.";
+        document.getElementById("imageMeaningQuestion").classList.remove("hidden");
+      } else {
+        feedback.classList.add("fail");
+        feedback.innerHTML = "이미지가 주는 긍정적이고 미래적인 인상을 중심으로 다시 선택하세요.";
+      }
+    }
+
+    function checkImageMeaning() {
+      const selected = document.querySelector('input[name="imageMeaning"]:checked');
+      const feedback = document.getElementById("imageMeaningFeedback");
+      feedback.className = "feedback-box";
+      if (selected && selected.value === "D") {
+        feedback.classList.add("success");
+        feedback.innerHTML = "<strong>이미지 의미 분석 성공!</strong><br><br>배제된 정보 탐색으로 이동합니다.";
+        setTimeout(() => showScreen("articleStep3"), 1000);
+      } else {
+        feedback.classList.add("fail");
+        feedback.innerHTML = "이 기사가 AI 산업을 어떤 방향으로 보여 주는지 다시 생각해 보세요.";
+      }
+    }
+
+    function selectBook(button, isCorrect) {
+      document.querySelectorAll("#articleStep3 .book").forEach(book => book.classList.remove("selected"));
+      button.classList.add("selected");
+      const result = document.getElementById("bookResult");
+      result.className = "feedback-box";
+      if (isCorrect) {
+        result.classList.add("success");
+        result.innerHTML = "<strong>배제 정보 확인 성공!</strong><br><br>이 기사는 실업과 불안 문제를 거의 다루지 않았습니다.";
+        setTimeout(() => showScreen("articleStep3Success"), 1000);
+      } else {
+        result.classList.add("fail");
+        result.innerHTML = "기사에서 거의 다루지 않은 현실 문제를 다시 찾아보세요.";
+      }
+    }
+    /* girlAdImages, boyAdImages는 상단에서 이미 선언됨 */
+
+const girlWords = ["분홍색", "치마", "거울"];
+const boyWords = ["파란색", "바지", "축구공"];
+
+function selectAdHotspot(button, word) {
+
+  const isGirl = girlWords.includes(word);
+
+  const targetArray =
+    isGirl ? girlAdImages : boyAdImages;
+
+  const targetSpan =
+    document.getElementById(
+      isGirl
+        ? "girlSelectedWords"
+        : "boySelectedWords"
+    );
+
+  if (targetArray.includes(word)) {
+
+    targetArray.splice(
+      targetArray.indexOf(word),
+      1
+    );
+
+    button.classList.remove("selected");
+    button.removeAttribute("data-word");
+
+  } else {
+
+    targetArray.push(word);
+
+    button.classList.add("selected");
+
+    button.setAttribute(
+      "data-word",
+      word
+    );
+  }
+
+  targetSpan.innerText =
+    targetArray.join(", ");
+}
+    function revealRoom2Ad(event) {
+  const wrap = event.currentTarget;
+  const cover = document.getElementById("room2MosaicCover");
+  const rect = wrap.getBoundingClientRect();
+
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  const spot = document.createElement("div");
+  spot.className = "reveal-spot";
+  spot.style.left = x + "px";
+  spot.style.top = y + "px";
+
+  cover.appendChild(spot);
+
+  cover.style.maskImage =
+    `radial-gradient(circle 70px at ${x}px ${y}px, transparent 0 68px, black 72px)`;
+  cover.style.webkitMaskImage =
+    `radial-gradient(circle 70px at ${x}px ${y}px, transparent 0 68px, black 72px)`;
+}
+
+function checkRoom2AdStep1() {
+
+  const upper =
+    document.querySelector(
+      'input[name="upperObject"]:checked'
+    );
+
+  const lower =
+    document.querySelector(
+      'input[name="lowerObject"]:checked'
+    );
+
+  const feedback =
+    document.getElementById(
+      "room2AdStep1Feedback"
+    );
+
+  feedback.className = "feedback-box";
+
+  if (
+    upper &&
+    lower &&
+    upper.value === "B" &&
+    lower.value === "E"
+  ) {
+
+    feedback.classList.add("success");
+
+    feedback.innerHTML = `
+      <strong>이미지 정체 확인 성공!</strong><br><br>
+      위쪽은 폐지가 실린 수레, 아래쪽은 여행용 캐리어입니다.<br>
+      다음 화면에서 이미지의 내용과 의미를 분석하세요.
+    `;
+
+    setTimeout(function () {
+      showScreen("room2AdImageMeaning");
+    }, 900);
+
+  } else {
+
+    feedback.classList.add("fail");
+
+    feedback.innerHTML = `
+      이미지를 다시 클릭해 자세히 살펴보세요.<br>
+      두 물건 모두 손잡이가 있지만 정체는 서로 다릅니다.
+    `;
+  }
+}
+
+function checkRoom2AdStep2() {
+  const selected = getCheckedNameValues("adWords");
+  const correct = ["65세", "손잡이", "잡으시렵니까"];
+
+  const feedback = document.getElementById("room2AdStep2Feedback");
+  feedback.className = "feedback-box";
+
+  if (sameArray(selected, correct)) {
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>문구 해독 성공!</strong><br><br>
+      광고는 노년의 시점, 두 삶의 선택지, 미래 선택의 책임을 강조하고 있습니다.
+    `;
+    setTimeout(() => showScreen("room2AdStep3"), 1200);
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      문구에서 미래의 시점, 대비되는 대상, 선택을 요구하는 표현을 찾아보세요.
+    `;
+  }
+}
+
+function checkRoom2AdStep3() {
+  const view = document.querySelector('input[name="room2AdView"]:checked');
+  const checked = Array.from(
+    document.querySelectorAll('input[name="room2Bias"]:checked')
+  ).map(el => el.value).sort();
+
+  const feedback = document.getElementById("room2AdStep3Feedback");
+  feedback.className = "feedback-box";
+
+  if (
+    view &&
+    view.value === "A" &&
+    checked.length === 2 &&
+    checked[0] === "3" &&
+    checked[1] === "4"
+  ) {
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>광고 분석 완료!</strong><br><br>
+      광고의 의도와 고정관념을 정확히 파악했습니다.<br><br>
+
+      <button class="main-btn" onclick="showScreen('room2Mission1Hint')">
+        MISSION 1 힌트 확인
+      </button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      광고의 의도 1개와 고정관념 2개를 다시 확인하세요.<br>
+      고정관념은 반드시 <strong>2개</strong>를 선택해야 합니다.
+    `;
+  }
+}
+
+function startRoom2() {
+      if (!timerStarted) {
+        startTimer();
+        timerStarted = true;
+      }
+      showScreen("room2Intro");
+    }
+
+function startRoom3() {
+      if (!timerStarted) {
+        startTimer();
+        timerStarted = true;
+      }
+      showScreen("room3Mission1");
+    }
+function checkRoom2AdMeaning() {
+  const contrastEl = document.getElementById("handleContrastInput");
+  const contrastInput = contrastEl
+    ? contrastEl.value.trim().replace(/\s/g, "")
+    : "";
+
+  const cart = getCheckedValues("cartMeaning");
+  const carrier = getCheckedValues("carrierMeaning");
+
+  const feedback = document.getElementById("room2AdMeaningFeedback");
+  feedback.className = "feedback-box";
+
+  if (!contrastInput.includes("대비")) {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      ㄷㅂ : 두 가지 이상의 대상을 맞대어 차이를 밝힘
+    `;
+    return;
+  }
+
+  if (
+    sameArray(cart, ["A", "C"]) &&
+    sameArray(carrier, ["B", "E"])
+  ) {
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>이미지 의미 분석 성공!</strong><br><br>
+      광고는 폐지 수레와 캐리어를 대비시켜<br>
+      불안한 노후와 안정적인 노후를 비교하고 있습니다.
+    `;
+
+    setTimeout(() => showScreen("room2AdStep2"), 1100);
+
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      다시 생각해 보세요.<br>
+      수레는 생계와 불안정한 노후를, 캐리어는 여행과 안정적인 노후를 떠올리게 합니다.
+    `;
+  }
+}
+    document.addEventListener("DOMContentLoaded", function() {
+      startTypingIntro();
+      updateTimer();
+    });
+function revealBlur(event, target) {
+  if (!event || !target) return;
+
+  const wrap = target.closest(".room2-reveal-wrap");
+  const wrapRect = wrap.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+
+  const xInTarget = event.clientX - targetRect.left;
+  const yInTarget = event.clientY - targetRect.top;
+
+  const xInWrap = event.clientX - wrapRect.left;
+  const yInWrap = event.clientY - wrapRect.top;
+
+  const hole = document.createElement("div");
+  hole.className = "reveal-hole";
+  hole.style.left = xInTarget + "px";
+  hole.style.top = yInTarget + "px";
+
+  hole.style.backgroundSize = wrapRect.width + "px auto";
+  hole.style.backgroundPosition =
+    "-" + (xInWrap - 29) + "px -" + (yInWrap - 29) + "px";
+
+  target.appendChild(hole);
+}
+let selectedMemoryCards = [];function revealBlurCircle(event, blurId){
+  const blur = document.getElementById(blurId);
+  const wrap = document.querySelector(".room2-reveal-wrap");
+
+  if(!blur || !wrap) return;
+
+  const rect = blur.getBoundingClientRect();
+  const wrapRect = wrap.getBoundingClientRect();
+
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  const hole = document.createElement("div");
+  hole.className = "reveal-hole";
+
+  hole.style.left = x + "px";
+  hole.style.top = y + "px";
+
+  hole.style.backgroundImage = `url("./image/old.jpg")`;
+  hole.style.backgroundSize = wrapRect.width + "px auto";
+
+  const bgX = -(blur.offsetLeft + x - 29);
+  const bgY = -(blur.offsetTop + y - 29);
+
+  hole.style.backgroundPosition = `${bgX}px ${bgY}px`;
+
+  blur.appendChild(hole);
+}
+
+let matchedPairs = 0;
+
+function initMemoryCards() {
+  selectedMemoryCards = [];
+  matchedPairs = 0;
+
+  document.querySelectorAll("#room2AdStep2 .memory-card").forEach(card => {
+    card.classList.remove("flipped", "matched");
+
+    card.onclick = function () {
+      if (
+        card.classList.contains("matched") ||
+        card.classList.contains("flipped") ||
+        selectedMemoryCards.length >= 2
+      ) return;
+
+      card.classList.add("flipped");
+      selectedMemoryCards.push(card);
+
+      if (selectedMemoryCards.length === 2) {
+        const first = selectedMemoryCards[0];
+        const second = selectedMemoryCards[1];
+
+        const isCorrect =
+          first.dataset.match === second.dataset.word &&
+          second.dataset.match === first.dataset.word;
+
+        if (isCorrect) {
+          first.classList.add("matched");
+          second.classList.add("matched");
+          matchedPairs++;
+          selectedMemoryCards = [];
+        } else {
+          setTimeout(function () {
+            first.classList.remove("flipped");
+            second.classList.remove("flipped");
+            selectedMemoryCards = [];
+          }, 800);
+        }
+      }
+    };
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initMemoryCards);
+
+function checkMemoryMission() {
+  const feedback = document.getElementById("memoryFeedback");
+  feedback.className = "feedback-box";
+
+  if (matchedPairs >= 3) {
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>핵심 표현 분석 성공!</strong><br><br>
+      65세는 노년/노후를, 손잡이는 삶의 방향을,<br>
+      잡으시렵니까는 미래의 선택을 강조합니다.
+    `;
+
+    setTimeout(function () {
+      showScreen("room2AdStep3");
+    }, 1300);
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      핵심 표현 3개와 의미 3개의 짝을 모두 찾아야 합니다.
+    `;
+  }
+}
+function checkRoom2PromoStep1() {
+  const q1 = document.querySelector('input[name="promoPhrase1"]:checked');
+  const q2 = document.querySelector('input[name="promoPhrase2"]:checked');
+  const q3 = document.querySelector('input[name="promoPhrase3"]:checked');
+
+  const feedback = document.getElementById("room2PromoStep1Feedback");
+  feedback.className = "feedback-box";
+
+  if (
+    q1 && q1.value === "B" &&
+    q2 && q2.value === "B" &&
+    q3 && q3.value === "B"
+  ) {
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>문구 해독 성공!</strong><br><br>
+      이 문구는 에너지 사용을 줄이고 깨끗한 환경을 만들자는 의미를 담고 있습니다.<br><br>
+      <button class="main-btn" onclick="showScreen('room2PromoStep2')">
+        STEP 2 이미지 분석으로 이동
+      </button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      “불”은 에너지 사용과 관련되고,<br>
+      “별이 잘 보이는 하늘”은 맑고 깨끗한 환경과 관련됩니다.
+    `;
+  }
+}
+function checkHandleContrastOnly() {
+  const input = document.getElementById("handleContrastInput");
+  const feedback = document.getElementById("handleContrastFeedback");
+
+  const answer = input.value.trim().replace(/\s/g, "");
+
+  feedback.className = "feedback-box";
+
+  if (answer.includes("대비")) {
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>정답!</strong><br>
+      두 손잡이가 서로 대비되어 광고의 의미를 만들고 있습니다.
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      ㄷㅂ : 두 가지 이상의 대상을 맞대어 차이를 밝힘
+    `;
+  }
+}
+let selectedPromoQuestion = null;
+let promoImageMatches = [];
+
+function selectPromoQuestion(num){
+  selectedPromoQuestion = num;
+
+  document.querySelectorAll(".promo-analysis-card")
+    .forEach(card => card.classList.remove("selected"));
+
+  const cards = document.querySelectorAll(".promo-analysis-card");
+  cards[num - 1].classList.add("selected");
+  
+}
+
+function matchPromoImage(num){
+const answerMap = {
+  1: "노란별",
+  2: "아이",
+  3: "지구 위에 서 있는 모습"
+};
+
+const answerBox = document.getElementById("promoAnswer" + num);
+if(answerBox){
+  answerBox.textContent = answerMap[num];
+}  
+  if(!selectedPromoQuestion){
+    alert("먼저 왼쪽 분석 내용을 선택하세요.");
+    return;
+  }
+
+  if(selectedPromoQuestion !== num){
+    alert("분석 내용과 이미지 요소가 맞지 않습니다. 다시 생각해 보세요.");
+    return;
+  }
+
+  const hotspots = document.querySelectorAll(".promo-hotspot");
+  const cards = document.querySelectorAll(".promo-analysis-card");
+
+  if(num === 1){
+    hotspots[num - 1].classList.add("found-yellow");
+  }
+
+  if(num === 2){
+    hotspots[num - 1].classList.add("found-green");
+  }
+
+  if(num === 3){
+    hotspots[num - 1].classList.add("found-blue");
+  }
+
+  cards[num - 1].classList.add("done");
+
+  if(!promoImageMatches.includes(num)){
+    promoImageMatches.push(num);
+  }
+
+  cards[num - 1].classList.remove("selected"); 
+}
+
+function checkRoom2PromoStep2(){
+  const feedback = document.getElementById("room2PromoStep2Feedback");
+  feedback.className = "feedback-box";
+
+  if(
+    promoImageMatches.includes(1) &&
+    promoImageMatches.includes(2) &&
+    promoImageMatches.includes(3)
+  ){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>이미지 분석 성공!</strong><br><br>
+      노란별, 아이, 지구 위에 서 있는 모습이 홍보물의 의미를 만드는 핵심 요소입니다.<br><br>
+      <button class="main-btn" onclick="showScreen('room2PromoStep3')">
+        STEP 3 주제와 의도 분석으로 이동
+      </button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      분석 내용 3개와 이미지 요소 3개를 모두 알맞게 연결해야 합니다.
+    `;
+  }
+}
+let draggedPromoWord = null;
+let promoSentenceWords = [];
+
+const promoCorrectWords = [
+  "에너지의",
+  "맞이하여",
+  "에너지",
+  "줄이고",
+  "환경을"
+];
+
+const promoDropZoneHTML = `
+  <span class="drop-slot" data-slot="0"></span>
+  <span class="fixed-word">날을</span>
+  <span class="drop-slot" data-slot="1"></span>
+  <span class="drop-slot" data-slot="2"></span>
+  <span class="fixed-word">사용을</span>
+  <span class="drop-slot" data-slot="3"></span>
+  <span class="drop-slot" data-slot="4"></span>
+  <span class="fixed-word">보호하자.</span>
+`;
+
+document.addEventListener("dragstart", function(e){
+  if(e.target.classList.contains("promo-word-card")){
+    draggedPromoWord = e.target;
+  }
+});
+
+function dropPromoWord(event){
+  event.preventDefault();
+
+  if(!draggedPromoWord) return;
+  if(draggedPromoWord.classList.contains("used")) return;
+
+  const word = draggedPromoWord.textContent.trim();
+
+  // 정답에 필요한 단어만 빈칸에 들어가도록 함
+  if(!promoCorrectWords.includes(word)){
+    draggedPromoWord = null;
+    return;
+  }
+
+  const emptySlot = document.querySelector("#promoDropZone .drop-slot:not(.filled)");
+
+  if(!emptySlot){
+    draggedPromoWord = null;
+    return;
+  }
+
+  promoSentenceWords.push(word);
+
+  const placed = document.createElement("button");
+  placed.className = "promo-word-card placed";
+  placed.type = "button";
+  placed.textContent = word;
+
+  // 놓은 카드를 다시 누르면 취소
+  placed.onclick = function(){
+    removePromoPlacedWord(placed, word);
+  };
+
+  emptySlot.appendChild(placed);
+  emptySlot.classList.add("filled");
+
+  draggedPromoWord.classList.add("used");
+  draggedPromoWord = null;
+}
+
+function removePromoPlacedWord(placed, word){
+  const parentSlot = placed.parentElement;
+  placed.remove();
+
+  if(parentSlot){
+    parentSlot.classList.remove("filled");
+  }
+
+  const idx = promoSentenceWords.indexOf(word);
+  if(idx > -1){
+    promoSentenceWords.splice(idx, 1);
+  }
+
+  document.querySelectorAll("#promoWordBank .promo-word-card")
+    .forEach(card => {
+      if(card.textContent.trim() === word){
+        card.classList.remove("used");
+      }
+    });
+}
+
+function resetPromoSentence(){
+  promoSentenceWords = [];
+
+  const zone = document.getElementById("promoDropZone");
+  if(zone){
+    zone.innerHTML = promoDropZoneHTML;
+    zone.classList.remove("filled");
+  }
+
+  document.querySelectorAll("#promoWordBank .promo-word-card")
+    .forEach(card => card.classList.remove("used"));
+
+  const feedback = document.getElementById("room2PromoStep3Feedback");
+  if(feedback){
+    feedback.className = "feedback-box";
+    feedback.innerHTML = "";
+  }
+}
+
+function checkRoom2PromoStep3(){
+  const feedback = document.getElementById("room2PromoStep3Feedback");
+  feedback.className = "feedback-box";
+
+  const slots = [...document.querySelectorAll("#promoDropZone .drop-slot")];
+  const answers = slots.map(slot => slot.textContent.trim());
+
+  const correct = [
+    "에너지의",
+    "맞이하여",
+    "에너지",
+    "줄이고",
+    "환경을"
+  ];
+
+  const isCorrect =
+    answers.length === correct.length &&
+    answers.every((word, index) => word === correct[index]);
+
+  if(isCorrect){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>주제 복원 성공!</strong><br><br>
+      MISSION 2 힌트 화면으로 이동합니다.
+    `;
+
+    setTimeout(function(){
+      showScreen("room2Mission2Hint");
+    }, 1000);
+
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      힌트: 이 홍보물은 <strong>‘에너지의 날’</strong> 홍보를 위해 제작되었어요.<br>
+      빈칸의 순서를 다시 확인해 보세요.
+    `;
+  }
+}
+
+
+/* ===== ROOM2 MISSION3 신문기사 B 분석 ===== */
+let room2NewsTitleKeywords = [];
+let room2NewsBodyClues = [];
+let room2NewsSubjectWords = [];
+
+function collectRoom2NewsTitleKeyword(button, word){
+  if(button.classList.contains("found")) return;
+  button.classList.add("found");
+  if(!room2NewsTitleKeywords.includes(word)){
+    room2NewsTitleKeywords.push(word);
+  }
+  const list = document.getElementById("room2NewsTitleList");
+  if(list){
+    const chip = document.createElement("span");
+    chip.className = "news2-clue-chip";
+    chip.textContent = word;
+    list.appendChild(chip);
+  }
+}
+
+function checkRoom2NewsStep1(){
+  const graph = document.querySelector('input[name="news2GraphMeaning"]:checked');
+  const core = document.querySelector('input[name="news2CoreView"]:checked');
+  const feedback = document.getElementById("room2NewsStep1Feedback");
+  feedback.className = "feedback-box";
+
+  const hasKeywords = room2NewsTitleKeywords.includes("기대") && room2NewsTitleKeywords.includes("불안");
+
+  if(hasKeywords && graph && graph.value === "C" && core && core.value === "A"){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>표제와 그래프 해독 성공!</strong><br><br>
+      이 기사는 AI에 대한 양과 음을 모두 함께 다루고 있습니다.<br><br>
+      <button class="main-btn" onclick="showScreen('room2NewsStep2')">
+        STEP 2 본문 분석으로 이동
+      </button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      표제에서는 <strong>기대</strong>와 <strong>불안</strong>을 모두 찾아야 해요.<br>
+      그래프와 표제가 함께 보여 주는 중심 내용도 다시 확인해 보세요.
+    `;
+  }
+}
+
+let room2NewsCoreFound = false;
+
+function collectRoom2NewsCoreSentence(button){
+  if(room2NewsCoreFound) return;
+
+  room2NewsCoreFound = true;
+  button.classList.add("core-selected");
+
+  const nextBox = document.querySelector("#room2NewsStep2 .news2-next-box");
+  if(nextBox){
+    nextBox.innerHTML = `
+      <strong>핵심 문장 발견!</strong><br><br>
+      이 기사는 AI를 바르게 쓰는 규칙과 일자리 보호 방법을 함께 찾아야 한다는 내용을 강조합니다.
+    `;
+  }
+
+  const nextBtn = document.getElementById("room2NewsStep2NextBtn");
+  if(nextBtn){
+    nextBtn.style.display = "block";
+  }
+}
+
+function addRoom2NewsSubjectWord(button, word){
+  if(button.classList.contains("used")) return;
+  const zone = document.getElementById("room2NewsSubjectZone");
+  if(room2NewsSubjectWords.length === 0){
+    zone.innerHTML = "";
+  }
+  room2NewsSubjectWords.push(word);
+  button.classList.add("used");
+
+  const placed = document.createElement("button");
+  placed.className = "news2-word-card placed";
+  placed.textContent = word;
+  placed.onclick = function(){
+    placed.remove();
+    const idx = room2NewsSubjectWords.indexOf(word);
+    if(idx > -1) room2NewsSubjectWords.splice(idx, 1);
+    button.classList.remove("used");
+    if(room2NewsSubjectWords.length === 0){
+      zone.innerHTML = "여기에 주제 문장을 순서대로 만드세요.";
+    }
+  };
+  zone.appendChild(placed);
+}
+
+function resetRoom2NewsSubject(){
+  room2NewsSubjectWords = [];
+  const zone = document.getElementById("room2NewsSubjectZone");
+  zone.innerHTML = "여기에 주제 문장을 순서대로 만드세요.";
+  document.querySelectorAll("#room2NewsSubjectBank .news2-word-card")
+    .forEach(card => card.classList.remove("used"));
+  const feedback = document.getElementById("room2NewsStep3Feedback");
+  feedback.className = "feedback-box";
+  feedback.innerHTML = "";
+}
+
+function checkRoom2NewsStep3(){
+  const view = document.querySelector('input[name="room2NewsView"]:checked');
+  const intent = document.querySelector('input[name="room2NewsIntent"]:checked');
+  const feedback = document.getElementById("room2NewsStep3Feedback");
+  feedback.className = "feedback-box";
+
+  const correctSubject = ["생성형 AI의", "장점과", "위험을", "함께", "생각하자."];
+  const subjectOk = room2NewsSubjectWords.length === correctSubject.length &&
+    room2NewsSubjectWords.every((word, idx) => word === correctSubject[idx]);
+
+  if(view && view.value === "A" && intent && intent.value === "C" && subjectOk){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>신문기사 B 분석 완료!</strong><br><br>
+      기사에 담긴 기대와 불안, 제작 의도와 주제를 정확히 파악했습니다.<br><br>
+      <button class="main-btn" onclick="showScreen('room2Mission3Hint')">
+        MISSION 3 힌트 확인
+      </button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      이 기사는 AI의 <strong>장점</strong>과 <strong>위험</strong>을 함께 생각하게 합니다.<br>
+      관점, 의도, 주제 문장 순서를 다시 확인하세요.
+    `;
+  }
+}
+function checkRoom2FinalPassword(){
+  const n1 = Number(document.getElementById("room2Num1").value);
+  const n2 = Number(document.getElementById("room2Num2").value);
+  const n3 = Number(document.getElementById("room2Num3").value);
+
+  const feedback = document.getElementById("room2FinalPasswordFeedback");
+  feedback.className = "feedback-box";
+
+  if(!n1 || !n2 || !n3){
+    feedback.classList.add("fail");
+    feedback.innerHTML = "세 개의 힌트 숫자를 모두 선택하세요.";
+    return;
+  }
+
+  const result = (n1 + n2) * n3;
+
+  if(result === 42){
+    stopTimer();
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>비밀번호 확인 성공!</strong><br><br>
+      최종 비밀번호는 <strong style="font-size:32px; color:#facc15;">42</strong>입니다.<br>
+      시간이 멈췄습니다.<br><br>
+      <button class="main-btn" onclick="openFinalTeamMission()">마지막 팀미션 보기</button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      계산 결과가 맞지 않습니다.<br>
+      세 미션에서 얻은 힌트 숫자를 다시 확인하세요.
+    `;
+  }
+}
+
+/* ===== ROOM3 MISSION1 공익광고 영상 분석 ===== */
+let room3SelectedLeft = null;
+let room3Matches = [];
+
+function checkRoom3Step1(){
+  const input = document.getElementById("room3Step1Answer");
+  const feedback = document.getElementById("room3Step1Feedback");
+
+  if(!input || !feedback) return;
+
+  const answer = input.value.trim().replace(/\s/g, "");
+  feedback.className = "feedback-box";
+
+  if(answer.includes("처음만힘들지")){
+    feedback.classList.add("success");
+    feedback.innerHTML = "정답입니다. 영상의 반복 문구를 잘 찾았습니다.";
+    document.getElementById("room3Step2Box").classList.remove("hidden");
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "영상에서 반복되는 짧은 문구를 다시 확인해 보세요.";
+  }
+}
+
+function selectMatchLeft(button){
+  document.querySelectorAll("#room3Mission1 .match-card.left")
+    .forEach(btn => btn.classList.remove("selected"));
+
+  room3SelectedLeft = button;
+  button.classList.add("selected");
+}
+
+function selectMatchRight(button){
+  if(!room3SelectedLeft) return;
+
+  const alreadyUsed = room3Matches.some(pair => pair.left === room3SelectedLeft || pair.right === button);
+
+  if(alreadyUsed){
+    return;
+  }
+
+  const leftId = room3SelectedLeft.dataset.id;
+  const rightId = button.dataset.id;
+
+  room3Matches.push({
+    left: room3SelectedLeft,
+    right: button,
+    correct: leftId === rightId
+  });
+
+  room3SelectedLeft.classList.remove("selected");
+  room3SelectedLeft.classList.add("matched");
+  button.classList.add("matched");
+
+  drawRoom3MatchLines();
+  room3SelectedLeft = null;
+}
+
+function drawRoom3MatchLines(){
+  const svg = document.getElementById("matchSvg");
+  if(!svg) return;
+
+  svg.innerHTML = "";
+
+  const svgRect = svg.getBoundingClientRect();
+
+  room3Matches.forEach(pair => {
+    const leftRect = pair.left.getBoundingClientRect();
+    const rightRect = pair.right.getBoundingClientRect();
+
+    const x1 = 0;
+    const y1 = leftRect.top + leftRect.height / 2 - svgRect.top;
+    const x2 = svgRect.width;
+    const y2 = rightRect.top + rightRect.height / 2 - svgRect.top;
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("class", "match-line");
+
+    svg.appendChild(line);
+  });
+}
+
+function resetRoom3Matching(){
+  room3Matches = [];
+  room3SelectedLeft = null;
+
+  document.querySelectorAll("#room3Mission1 .match-card").forEach(card => {
+    card.classList.remove("selected", "matched");
+  });
+
+  const svg = document.getElementById("matchSvg");
+  if(svg) svg.innerHTML = "";
+
+  const feedback = document.getElementById("room3Step2Feedback");
+  if(feedback){
+    feedback.className = "feedback-box";
+    feedback.innerHTML = "";
+  }
+}
+
+function checkRoom3Step2(){
+  const feedback = document.getElementById("room3Step2Feedback");
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  const allCorrect = room3Matches.length === 3 && room3Matches.every(pair => pair.correct);
+
+  if(allCorrect){
+    feedback.classList.add("success");
+    feedback.innerHTML = "연결 성공!";
+    document.getElementById("room3Step3Box").classList.remove("hidden");
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "처음의 행동이 이후 어떤 변화로 이어졌는지 다시 연결해 보세요.";
+  }
+}
+
+function checkRoom3Step3(){
+  const selected = document.querySelector('input[name="room3Intent"]:checked');
+  const feedback = document.getElementById("room3Step3Feedback");
+
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  if(selected && selected.value === "A"){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      미션1 분석 성공!<br><br>
+      <button class="main-btn" onclick="showScreen('room3Mission1Hint')">
+        힌트 숫자 획득
+      </button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "광고가 사람들에게 어떤 행동을 먼저 시작하자고 말하는지 생각해 보세요.";
+  }
+}
+
+
+let room3Mission2Cards = [];
+
+function toggleRoom3Mission2Card(button){
+  const value = button.dataset.value;
+
+  if(button.classList.contains("selected")){
+    button.classList.remove("selected");
+    room3Mission2Cards = room3Mission2Cards.filter(v => v !== value);
+    return;
+  }
+
+  if(room3Mission2Cards.length >= 2){
+    return;
+  }
+
+  button.classList.add("selected");
+  room3Mission2Cards.push(value);
+}
+
+function checkRoom3Mission2Step1(){
+  const q1Input = document.getElementById("room3Mission2Q1");
+  const q2Input = document.getElementById("room3Mission2Q2");
+  const feedback = document.getElementById("room3Mission2Step1Feedback");
+
+  if(!q1Input || !q2Input || !feedback) return;
+
+  const q1 = q1Input.value.trim();
+  const q2 = q2Input.value.trim().replace(/\s/g, "");
+
+  feedback.className = "feedback-box";
+
+  const q1Correct =
+    q1.includes("이주") ||
+    q1.includes("다문화") ||
+    q1.includes("외국");
+
+  const q2Correct =
+    q2.includes("우리는모두우리");
+
+  if(q1Correct && q2Correct){
+    feedback.classList.add("success");
+    feedback.innerHTML = "STEP 1 성공! 영상의 대상과 핵심 문구를 잘 찾았습니다.";
+    document.getElementById("room3Mission2Step2Box").classList.remove("hidden");
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "영상 속 청소년들의 공통점과 반복되는 문구를 다시 확인해 보세요.";
+  }
+}
+
+function checkRoom3Mission2Step2(){
+  const selected = document.querySelector('input[name="room3Mission2Scene"]:checked');
+  const feedback = document.getElementById("room3Mission2Step2Feedback");
+
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  if(selected && selected.value === "B"){
+    feedback.classList.add("success");
+    feedback.innerHTML = "STEP 2 성공! 광고에 사용된 장면의 의미를 잘 파악했습니다.";
+    document.getElementById("room3Mission2Step3Box").classList.remove("hidden");
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "영상에서 친구들이 함께 어울려 지내는 장면을 다시 떠올려 보세요.";
+  }
+}
+
+function checkRoom3Mission2Step3(){
+  const selected = document.querySelector('input[name="room3Mission2Society"]:checked');
+  const feedback = document.getElementById("room3Mission2Step3Feedback");
+
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  if(selected && selected.value === "E"){
+    feedback.classList.add("success");
+    feedback.innerHTML = "STEP 3 성공! 광고에 반영된 사회·문화적 상황을 잘 찾았습니다.";
+    document.getElementById("room3Mission2Step4Box").classList.remove("hidden");
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "오늘날 학교에서 이주 배경 학생들과 함께 생활하는 경우가 늘어나는 상황을 떠올려 보세요.";
+  }
+}
+
+function checkRoom3Mission2Step4(){
+  const feedback = document.getElementById("room3Mission2Step4Feedback");
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  const selectedSorted = [...room3Mission2Cards].sort().join(",");
+
+  if(selectedSorted === "2,5"){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      STEP 4 성공!<br><br>
+      <button class="main-btn" onclick="showScreen('room3Mission2Hint')">
+        힌트 숫자 얻기
+      </button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "광고에서 충분히 드러나지 않은 부분이 무엇인지 다시 생각해 보세요.";
+  }
+}
+
+
+function checkRoom3FinalPassword(){
+  const n1 = document.getElementById("room3Num1").value;
+  const n2 = document.getElementById("room3Num2").value;
+  const feedback = document.getElementById("room3FinalPasswordFeedback");
+
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  if(n1 === "6" && n2 === "7"){
+    stopTimer();
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>비밀번호 확인 성공!</strong><br><br>
+      MISSION 1 숫자 6과 MISSION 2 숫자 7을 순서대로 연결하면<br>
+      최종 비밀번호는 <strong style="font-size:32px; color:#facc15;">67</strong>입니다.<br>
+      시간이 멈췄습니다.<br><br>
+      <button class="main-btn" onclick="openFinalTeamMission()">마지막 팀미션 보기</button>
+    `;
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = "각 미션에서 얻은 힌트 숫자를 순서대로 다시 입력해 보세요.";
+  }
+}
+
+window.addEventListener("resize", drawRoom3MatchLines);
+function checkAdMissionStep1(){
+  const feedback = document.getElementById("adStep1Feedback");
+  feedback.className = "feedback-box";
+
+  const girlText = document.getElementById("girlAdText").value.trim();
+  const boyText = document.getElementById("boyAdText").value.trim();
+
+  const girlSelected = document.getElementById("girlSelectedWords").innerText;
+  const boySelected = document.getElementById("boySelectedWords").innerText;
+
+  const girlTextOk =
+    girlText.includes("가장") ||
+    girlText.includes("예쁘") ||
+    girlText.includes("공주") ||
+    girlText.includes("나!");
+
+  const boyTextOk =
+    boyText.includes("나!") ||
+    boyText.includes("가장") ||
+    boyText.includes("용감") ||
+    boyText.includes("영웅");
+
+  const girlImageOk =
+    girlSelected.includes("분홍색") &&
+    girlSelected.includes("치마") &&
+    girlSelected.includes("거울");
+
+  const boyImageOk =
+    boySelected.includes("파란색") &&
+    boySelected.includes("축구공") &&
+    boySelected.includes("바지");
+
+  if(girlTextOk && boyTextOk && girlImageOk && boyImageOk){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      STEP 1 성공!<br><br>
+      광고 문구와 이미지 요소를 잘 분석했습니다.
+    `;
+
+    setTimeout(function(){
+      showScreen("adMissionStep2");
+    }, 900);
+
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      광고 문구와 이미지 요소를 다시 확인해 보세요.<br>
+      여자아이와 남자아이에게 다르게 제시된 문구와 이미지를 모두 찾아야 합니다.
+    `;
+  }
+}
+
+function checkAdMissionStep2(){
+  const selected = document.querySelector('input[name="adStereotype"]:checked');
+  const feedback = document.getElementById("adStep2Feedback");
+
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  if(selected && selected.value === "B"){
+    feedback.classList.add("success");
+    feedback.innerHTML = `
+      <strong>STEP 2 성공!</strong><br><br>
+      광고에 드러난 성별 고정관념을 잘 파악했습니다.
+    `;
+
+    setTimeout(function(){
+      showScreen("adMissionSuccess");
+    }, 900);
+
+  } else {
+    feedback.classList.add("fail");
+    feedback.innerHTML = `
+      광고가 여자아이와 남자아이를 각각 어떤 이미지로 표현하는지 다시 확인해 보세요.
+    `;
+  }
+}
+function checkFinalCalc(){
+  const feedback = document.getElementById("finalCalcFeedback");
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  feedback.classList.add("success");
+  feedback.innerHTML = `
+    <strong>정답 확인 완료!</strong><br><br>
+    최종 비밀번호를 확인했습니다.<br><br>
+    <button class="main-btn" onclick="openFinalTeamMission()">마지막 팀미션 보기</button>
+  `;
+
+  if(typeof stopTimer === "function"){
+    stopTimer();
+  }
+}
+const teamCodes = {
+  1: { room1: "19", room2: "42", room3: "67" },
+  2: { room1: "26", room2: "51", room3: "34" },
+  3: { room1: "73", room2: "18", room3: "45" },
+  4: { room1: "38", room2: "64", room3: "27" },
+  5: { room1: "54", room2: "29", room3: "81" },
+  6: { room1: "47", room2: "35", room3: "92" },
+  7: { room1: "68", room2: "74", room3: "13" },
+  8: { room1: "82", room2: "16", room3: "59" },
+  9: { room1: "31", room2: "87", room3: "46" },
+  10:{ room1: "95", room2: "23", room3: "78" }
+};
+function checkFinalPassword(){
+
+  const input =
+    document.getElementById("finalPasswordInput")
+    .value.trim();
+
+  const feedback =
+    document.getElementById("finalPasswordFeedback");
+
+  const codes = teamCodes[selectedTeam];
+
+  const correctPassword =
+    codes.room1 + codes.room2 + codes.room3;
+
+  feedback.className = "feedback-box";
+
+  if(input === correctPassword){
+
+    feedback.classList.add("success");
+
+    feedback.innerHTML = `
+      최종 비밀번호 확인 성공!<br><br>
+      QR 코드를 스캔해 패들렛으로 이동하세요.
+    `;
+
+    document
+      .getElementById("padletQrBox")
+      .classList.remove("hidden");
+
+    if(typeof stopTimer === "function"){
+      stopTimer();
+    }
+
+  } else {
+
+    feedback.classList.add("fail");
+
+    feedback.innerHTML = `
+      세 개의 방에서 얻은 비밀번호를
+      순서대로 다시 확인해 보세요.
+    `;
+  }
+}
+function checkFinalCalc(){
+  const feedback = document.getElementById("finalCalcFeedback");
+  if(!feedback) return;
+
+  feedback.className = "feedback-box";
+
+  feedback.classList.add("success");
+  feedback.innerHTML = `
+    <strong>정답 확인 완료!</strong><br><br>
+    최종 비밀번호를 확인했습니다.<br><br>
+    <button class="main-btn" onclick="openFinalTeamMission()">마지막 팀미션 보기</button>
+  `;
+
+  if(typeof stopTimer === "function"){
+    stopTimer();
+  }
+}
+
+
+function openFinalTeamMission(){
+  showScreen("finalTeamMissionRoom");
+}
+</script>
+
+</body>
+</html>
